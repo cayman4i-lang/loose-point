@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#11110f" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <title>Loose Point — Floppy Spear Duel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="appSplash" aria-hidden="true">
+    <div class="splashMark"><i></i><b></b></div>
+    <strong>LOOSE POINT</strong>
+    <span>FLOPPY SPEAR DUEL</span>
+  </div>
+  <main id="gameShell">
+    <header>
+      <div class="brand"><b>LOOSE</b><span>POINT</span></div>
+      <div id="roundLabel">FIRST TO 3</div>
+      <div class="headerActions"><button id="homeButton" hidden>RETURN HOME</button><button id="soundButton" aria-label="Toggle sound">SOUND ON</button></div>
+    </header>
+    <section id="arena" aria-label="Floppy spear duel game">
+      <div id="gameViewport">
+      <canvas id="game"></canvas>
+      <div id="airChallenge" hidden><b>AIRBORNE</b><span>0.0 / 7.0</span></div>
+      <div id="startCard">
+        <div id="rankBadge"><div id="rankEmblem" class="rank-wood" aria-hidden="true"><span>◆</span></div><div class="rankBadgeCopy"><small>RANK</small><b id="rankName">WOOD I</b><i><span id="rankProgress"></span></i><em id="rankXp">0 / 100 XP</em></div></div>
+        <div class="eyebrow">A FLOPPY SPEAR DUEL</div>
+        <h1>HIT THE<br><em>POINT.</em></h1>
+        <button id="startButton">ENTER THE PIT <span>→</span></button>
+        <button id="onlineButton" class="secondaryButton">PLAY ONLINE <span>⌁</span></button>
+        <button id="upgradesButton" class="secondaryButton">CUSTOMIZE <span id="homeCoins">◉ 0</span></button>
+      </div>
+      <div id="upgradesCard" hidden>
+        <div class="upgradeHeader"><div><div class="eyebrow">YOUR FIGHTER</div><h2>LOADOUT</h2></div><b id="coinCount">◉ 0</b></div>
+        <div class="upgradeTabs">
+          <button data-tab="colors" class="active">COLOR</button>
+          <button data-tab="clothes">CLOTHES</button>
+          <button data-tab="lives">LIVES</button>
+          <button data-tab="abilities" hidden>ABILITIES</button>
+        </div>
+        <div id="colorsPanel" class="upgradePanel"><div id="colorChoices"></div><p>New colors cost 5 coins. Owned colors can be equipped anytime.</p></div>
+        <div id="clothesPanel" class="upgradePanel" hidden>
+          <div id="secretUnlockNotice" hidden>NEW GUY UNLOCKED — SPACEMAN</div>
+          <div id="skinChoices"></div>
+          <div id="skinDetail"><div><b id="skinDetailName">CLASSIC</b><small id="skinDetailStats">1 THROW · 1 DAMAGE · 1 COIN/HIT · 3 COINS/KILL</small></div><button id="skinActionButton">EQUIPPED</button></div>
+        </div>
+        <div id="livesPanel" class="upgradePanel" hidden><div class="lifeReadout"><span>STARTING LIVES</span><b id="lifeCount">♥ ♥ ♥</b></div><button id="buyLifeButton">ADD ONE LIFE — ◉ 10</button><p>Upgrade three times for a maximum of six lives.</p></div>
+        <div id="abilitiesPanel" class="upgradePanel" hidden>
+          <div id="abilityPicker" aria-label="Choose an ability">
+            <button class="abilityPick selected" data-ability="freeze" aria-label="Select Freeze Arrow"><i class="freezeIcon">❄</i><small>FREEZE</small></button>
+            <button class="abilityPick locked" data-ability="ricochet" aria-label="Ricochet is locked" disabled><i class="ricochetIcon"><b></b></i><small>RICOCHET</small><em>LOCKED</em></button>
+            <button class="abilityPick" data-ability="split" aria-label="Select Split Shot"><i class="splitIcon"><b></b></i><small>SPLIT</small></button>
+          </div>
+          <div id="abilityDetail">
+            <div class="eyebrow" id="abilityEyebrow">SECRET ABILITY</div><h3 id="abilityName">FREEZE ARROW</h3><p id="abilityDescription">Your charged next shot freezes one fighter for 1.5 seconds.</p>
+            <div class="abilityActions"><button id="abilityActionButton">UPGRADE — ◉ 30</button><button id="unlockRicochetButton">BUY RICOCHET — ◉ 700</button></div>
+          </div>
+          <div id="abilityLegacyControls" hidden>
+            <p id="freezeAbilityText"></p><button id="freezeUpgradeButton"></button>
+            <p id="ricochetAbilityText"></p><button id="ricochetAbilityButton"></button>
+            <p id="splitAbilityText"></p><button id="splitAbilityButton"></button>
+          </div>
+        </div>
+        <button id="closeUpgrades" class="backButton">← BACK TO HOME</button>
+      </div>
+      <div id="onlineLobby" hidden>
+        <div class="eyebrow">PEER-TO-PEER FREE-FOR-ALL</div>
+        <h2>PLAY TOGETHER</h2>
+        <p id="lobbyStatus">Host up to six friends for a seven-player battle, or join with a room code.</p>
+        <div class="lobbyActions">
+          <button id="hostButton">HOST ROOM</button>
+          <div class="joinRow"><input id="roomInput" maxlength="32" placeholder="ROOM CODE"><button id="joinButton">JOIN</button></div>
+        </div>
+        <section id="friendsPanel" aria-label="Friends">
+          <div class="friendsHeading"><b>FRIENDS</b><small>GREEN = ONLINE&nbsp;&nbsp; RED = OFFLINE</small></div>
+          <div class="profileRow"><input id="playerNameInput" maxlength="16" placeholder="YOUR NAME"><button id="saveNameButton">SAVE NAME</button></div>
+          <div class="friendCodeCard"><span>YOUR NAME</span><b id="friendCodeText">LOADING...</b></div>
+          <div class="friendAddRow"><input id="friendCodeInput" maxlength="16" placeholder="FRIEND NAME OR CODE"><button id="addFriendButton">ADD FRIEND</button></div>
+          <div id="friendsList"><small>ADD A FRIEND TO SEE THEM HERE.</small></div>
+        </section>
+        <div id="nearbyRooms"><small>CHECKING NEARBY ROOMS...</small></div>
+        <div id="roomCode" hidden><span>YOUR ROOM CODE</span><b id="roomCodeText"></b><button id="copyRoomButton">COPY CODE</button></div>
+        <button id="backButton" class="backButton">← BACK</button>
+      </div>
+      <div id="arenaRoulette" hidden>
+        <div class="eyebrow">CHOOSING THE PIT</div>
+        <h2>WHERE TO?</h2>
+        <div class="rouletteWindow"><div id="rouletteTrack"></div><i></i></div>
+        <div id="rouletteStatus">LOCKING COORDINATES...</div>
+      </div>
+      <div id="resultCard" hidden>
+        <div class="eyebrow" id="resultEyebrow">ROUND OVER</div>
+        <h2 id="resultTitle">POINT!</h2>
+        <p id="resultText"></p>
+        <button id="againButton">NEXT ROUND <span>→</span></button>
+      </div>
+      <div class="score player-score"><span>YOU</span><b id="playerScore">0</b></div>
+      <div class="score bot-score"><span>BOT</span><b id="botScore">0</b></div>
+      <button id="throwButton" aria-label="Throw spear">
+        <span class="throwIcon">↗</span><b>THROW</b><small id="ammoLabel">SPEAR READY</small>
+      </button>
+      <button id="vanishButton" aria-label="Vanish for ten seconds" hidden>VANISH</button>
+      <button id="freezeButton" aria-label="Use charged freeze arrow" hidden><b>FREEZE</b><small>READY</small></button>
+      <button id="ricochetButton" aria-label="Use charged ricochet shots" hidden><b>RICOCHET</b><small>READY</small></button>
+      <button id="splitButton" aria-label="Use charged split shot" hidden><b>SPLIT</b><small>READY</small></button>
+      </div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+  <script src="game.js"></script>
+  <script>window.addEventListener('load',()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');setTimeout(()=>document.querySelector('#appSplash')?.classList.add('hide'),850);setTimeout(()=>document.querySelector('#appSplash')?.remove(),1450);});</script>
+</body>
+</html>
