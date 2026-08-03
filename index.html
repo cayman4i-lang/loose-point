@@ -53,14 +53,14 @@
         </div>
         <div id="livesPanel" class="upgradePanel" hidden><div class="lifeReadout"><span>STARTING LIVES</span><b id="lifeCount">♥ ♥ ♥</b></div><button id="buyLifeButton">ADD ONE LIFE — ◉ 10</button><p>Upgrade three times for a maximum of six lives.</p></div>
         <div id="abilitiesPanel" class="upgradePanel" hidden>
-          <div id="abilityPicker" aria-label="Choose an ability">
-            <button class="abilityPick selected" data-ability="freeze" aria-label="Select Freeze Arrow"><i class="freezeIcon">❄</i><small>FREEZE</small></button>
-            <button class="abilityPick locked" data-ability="ricochet" aria-label="Ricochet is locked" disabled><i class="ricochetIcon"><b></b></i><small>RICOCHET</small><em>LOCKED</em></button>
-            <button class="abilityPick" data-ability="split" aria-label="Select Split Shot"><i class="splitIcon"><b></b></i><small>SPLIT</small></button>
+          <div id="abilityPicker" aria-label="Choose one equipped ability">
+            <div class="abilityChoice"><button class="abilityPick selected" data-ability="freeze" aria-label="Select Freeze Arrow"><i class="freezeIcon">❄</i><small>FREEZE</small><em hidden>LOCKED</em></button><button class="abilityCardAction" data-ability-action="freeze">SECRET</button></div>
+            <div class="abilityChoice"><button class="abilityPick locked" data-ability="ricochet" aria-label="View Ricochet"><i class="ricochetIcon"><b></b></i><small>RICOCHET</small><em>LOCKED</em></button><button class="abilityCardAction" data-ability-action="ricochet">LOCKED</button></div>
+            <div class="abilityChoice"><button class="abilityPick locked" data-ability="split" aria-label="View Split Shot"><i class="splitIcon"><b></b></i><small>SPLIT</small><em>LOCKED</em></button><button class="abilityCardAction" data-ability-action="split">LOCKED</button></div>
           </div>
           <div id="abilityDetail">
             <div class="eyebrow" id="abilityEyebrow">SECRET ABILITY</div><h3 id="abilityName">FREEZE ARROW</h3><p id="abilityDescription">Your charged next shot freezes one fighter for 1.5 seconds.</p>
-            <div class="abilityActions"><button id="abilityActionButton">UPGRADE — ◉ 30</button><button id="unlockRicochetButton">BUY RICOCHET — ◉ 700</button></div>
+            <div class="abilityActions" hidden><button id="abilityActionButton">UPGRADE — ◉ 30</button><button id="unlockRicochetButton">BUY RICOCHET — ◉ 700</button></div>
           </div>
           <div id="abilityLegacyControls" hidden>
             <p id="freezeAbilityText"></p><button id="freezeUpgradeButton"></button>

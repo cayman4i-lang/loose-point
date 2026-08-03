@@ -1,4 +1,4 @@
-const CACHE='loose-point-app-v31-github-pages';
+const CACHE='loose-point-app-v33-ability-road-portal-moon';
 const SHELL=['/','/index.html','/styles.css','/game.js','/manifest.webmanifest','/icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));

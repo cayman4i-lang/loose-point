@@ -167,9 +167,12 @@ h1 em{color:var(--acid);font-style:normal}
 .upgradePanel{min-height:150px}
 .upgradePanel p{color:#8b8b80;font-size:9px;line-height:1.5}
 #abilityPicker{display:flex;gap:18px;align-items:flex-start;margin:8px 0 22px}
+.abilityChoice{width:126px;display:grid;gap:10px}
 .abilityPick{position:relative;width:126px;height:126px;border:3px solid #284a7a;border-radius:50%;background:#14233d;color:#eef7ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-family:'DM Mono';cursor:pointer;box-shadow:inset 0 0 0 4px #0f1929}
 .abilityPick.selected{border-color:var(--acid);box-shadow:0 0 0 2px #171713,0 0 0 5px var(--acid),inset 0 0 0 4px #0f1929}
 .abilityPick:disabled{cursor:default;opacity:.56}
+.abilityCardAction{min-height:38px;padding:7px 4px!important;border:2px solid #526987!important;background:var(--acid)!important;color:var(--ink)!important;font:10px 'Archivo Black'!important;line-height:1.05;cursor:pointer}
+.abilityCardAction:disabled{background:#55584d!important;border-color:#55584d!important;color:#9a9c94!important;cursor:default}
 .abilityPick small{font:9px 'Archivo Black';letter-spacing:.08em}
 .abilityPick em{position:absolute;right:-9px;top:7px;padding:3px 5px;background:#263148;color:#cfd7e6;font:7px 'Archivo Black';font-style:normal;letter-spacing:.05em}
 .freezeIcon{font-size:52px;font-style:normal;line-height:.8;color:#d9fbff;text-shadow:0 0 12px #49cfff}
