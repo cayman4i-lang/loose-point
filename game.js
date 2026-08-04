@@ -728,5 +728,23 @@
   const startHostedMode=rule=>{multiplayerRule=rule;knockoutRoster=null;paintModeChoice();hostModeChoices.hidden=true;hostRoom();};
   hostRoomButton.onclick=()=>{if(netMode!=='local'||peer||joinBusy)return;hostModeChoices.hidden=!hostModeChoices.hidden;document.querySelector('#lobbyStatus').textContent=hostModeChoices.hidden?'Host a room, type a friend’s code, or choose the closest open room.':'CHOOSE NORMAL OR KNOCKOUT TO HOST YOUR ROOM.';};
   normalModeButton.onclick=()=>startHostedMode('normal');knockoutModeButton.onclick=()=>startHostedMode('knockout');
+  // The name field keeps its draft while friends refresh, then saves exactly what the player typed.
+  const finalNameField=document.querySelector('#playerNameInput'),finalNameSave=document.querySelector('#saveNameButton');
+  let finalNameDraft=finalNameField?.value??playerName;
+  if(finalNameField)finalNameField.addEventListener('input',()=>{nameEditDirty=true;finalNameDraft=finalNameField.value;},true);
+  const keepTypedNameRender=renderFriends;
+  renderFriends=()=>{const editing=!!finalNameField&&(document.activeElement===finalNameField||nameEditDirty),typed=finalNameField?.value??finalNameDraft;keepTypedNameRender();if(editing&&finalNameField)finalNameField.value=typed;};
+  const saveTypedName=()=>{const status=document.querySelector('#lobbyStatus'),raw=String(finalNameField?.value??finalNameDraft).replace(/[^a-zA-Z0-9 _-]/g,'').trim().slice(0,16),code=cleanFriendCode(raw);if(code.length<3){if(status)status.textContent='CHOOSE A NAME WITH AT LEAST 3 LETTERS.';return;}if(netMode!=='local'){if(status)status.textContent='RETURN HOME BEFORE CHANGING YOUR NAME.';return;}playerName=raw;friendCode=code;finalNameDraft=raw;nameEditDirty=false;friendProfiles=friendProfiles.filter(f=>f.code!==code);saveSocial();if(finalNameField)finalNameField.value=raw;try{presencePeer?.destroy();}catch(_){}presencePeer=null;setTimeout(()=>{initPresence();refreshFriends();},250);renderFriends();if(status)status.textContent='NAME SAVED.';};
+  if(finalNameSave)finalNameSave.onclick=saveTypedName;
+  // Let phones and tablets open their text keyboard without arena gestures taking the tap.
+  document.querySelectorAll('input,textarea,select').forEach(field=>{field.addEventListener('pointerdown',event=>event.stopPropagation());field.addEventListener('touchend',event=>event.stopPropagation());});
+  // Keep room choices dependable on touch screens and keep scores out of the waiting lobby.
+  let hostChoiceTouchAt=0;const showHostChoices=event=>{event?.preventDefault();event?.stopPropagation();if(netMode!=='local'||peer||joinBusy)return;hostModeChoices.hidden=!hostModeChoices.hidden;document.querySelector('#lobbyStatus').textContent=hostModeChoices.hidden?'Host a room, type a friend’s code, or choose the closest open room.':'CHOOSE NORMAL OR KNOCKOUT TO HOST YOUR ROOM.';};
+  hostRoomButton.onclick=showHostChoices;hostRoomButton.addEventListener('touchend',event=>{hostChoiceTouchAt=Date.now();showHostChoices(event);},{passive:false});
+  const pickHostMode=rule=>{if(Date.now()-hostChoiceTouchAt<80)return;startHostedMode(rule);};
+  normalModeButton.onclick=()=>pickHostMode('normal');knockoutModeButton.onclick=()=>pickHostMode('knockout');
+  const lobbyHost=hostRoom;hostRoom=()=>{document.body.classList.add('hostingLobby');lobbyHost();};const lobbySpin=spinArena;spinArena=(forced,remote)=>{document.body.classList.remove('hostingLobby');lobbySpin(forced,remote);};const lobbyLeave=leaveRoom;leaveRoom=()=>{document.body.classList.remove('hostingLobby');lobbyLeave();};
+  // Installed apps ask for a new version every time they open, then reload once only when one arrives.
+  let reloadedForAppUpdate=false;const checkAppUpdate=async()=>{if(!('serviceWorker'in navigator))return;try{const registration=await navigator.serviceWorker.getRegistration();await registration?.update();navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!reloadedForAppUpdate){reloadedForAppUpdate=true;location.reload();}},{once:true});}catch(_){}};checkAppUpdate();window.addEventListener('pageshow',checkAppUpdate);
   window.addEventListener('resize',resize);if(window.visualViewport)window.visualViewport.addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe(arena);else setInterval(resize,750);loadUpgrades();resize();requestAnimationFrame(loop);
 })();
