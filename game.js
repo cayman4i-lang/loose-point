@@ -723,5 +723,10 @@
   hit=(f,s)=>{const shield=heldShield(f);if(shield&&s.owner!==f&&!s.stuck){if((s.shieldGrace||0)>0)return;const nx=Math.cos(shield.a),ny=Math.sin(shield.a),dot=s.vx*nx+s.vy*ny;s.x=shield.x+nx*(shield.r+5);s.y=shield.y+ny*(shield.r+5);s.vx=(s.vx-2*dot*nx)*1.08;s.vy=(s.vy-2*dot*ny)*1.08;s.a=Math.atan2(s.vy,s.vx);s.stuck=false;s.stuckTo=null;s.life=Math.max(s.life,3);s.shieldGrace=.09;shieldBurst(f);beep(205,.09,'triangle',.055);return;}fullShieldHit(f,s);};
   const shieldUpdate=update;
   update=dt=>{shieldUpdate(dt);for(const s of spears)s.shieldGrace=Math.max(0,(s.shieldGrace||0)-dt);};
+  // Host Room opens its game-type choices, then creates the room after one is chosen.
+  const hostModeChoices=document.querySelector('#hostModeChoices'),hostRoomButton=document.querySelector('#hostButton');
+  const startHostedMode=rule=>{multiplayerRule=rule;knockoutRoster=null;paintModeChoice();hostModeChoices.hidden=true;hostRoom();};
+  hostRoomButton.onclick=()=>{if(netMode!=='local'||peer||joinBusy)return;hostModeChoices.hidden=!hostModeChoices.hidden;document.querySelector('#lobbyStatus').textContent=hostModeChoices.hidden?'Host a room, type a friend’s code, or choose the closest open room.':'CHOOSE NORMAL OR KNOCKOUT TO HOST YOUR ROOM.';};
+  normalModeButton.onclick=()=>startHostedMode('normal');knockoutModeButton.onclick=()=>startHostedMode('knockout');
   window.addEventListener('resize',resize);if(window.visualViewport)window.visualViewport.addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe(arena);else setInterval(resize,750);loadUpgrades();resize();requestAnimationFrame(loop);
 })();
