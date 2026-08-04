@@ -718,7 +718,7 @@
   // Shield collision follows the full shield that is drawn on screen.
   function heldShield(f){if(f.skin==='trojan'){const a=shieldAngleOf(f);return{x:f.x+Math.cos(a)*46,y:f.y-4+Math.sin(a)*46,a,r:47};}if(f.skin==='captain'&&f.hasSpear&&!f.shieldOut){const a=faceAngle(f);return{x:f.x+Math.cos(a)*33,y:f.y-12+Math.sin(a)*33,a,r:32};}return null;}
   const shieldBodyHit=bodyHit;
-  bodyHit=(f,x1,y1,x2,y2)=>{const shield=heldShield(f);if(shield&&pointSegment(shield.x,shield.y,x1,y1,x2,y2)<=shield.r)return true;return shieldBodyHit(f,x1,y1,x2,y2);};
+  bodyHit=(f,x1,y1,x2,y2)=>{const shield=heldShield(f);if(shield&&pointSegment(shield.x,shield.y,[x1,y1],[x2,y2])<=shield.r)return true;return shieldBodyHit(f,x1,y1,x2,y2);};
   const fullShieldHit=hit;
   hit=(f,s)=>{const shield=heldShield(f);if(shield&&s.owner!==f&&!s.stuck){if((s.shieldGrace||0)>0)return;const nx=Math.cos(shield.a),ny=Math.sin(shield.a),dot=s.vx*nx+s.vy*ny;s.x=shield.x+nx*(shield.r+5);s.y=shield.y+ny*(shield.r+5);s.vx=(s.vx-2*dot*nx)*1.08;s.vy=(s.vy-2*dot*ny)*1.08;s.a=Math.atan2(s.vy,s.vx);s.stuck=false;s.stuckTo=null;s.life=Math.max(s.life,3);s.shieldGrace=.09;shieldBurst(f);beep(205,.09,'triangle',.055);return;}fullShieldHit(f,s);};
   const shieldUpdate=update;
