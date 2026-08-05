@@ -3,6 +3,7 @@
 
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:'DM Mono',monospace;color:var(--paper);touch-action:none;user-select:none}
+html,body{position:fixed;inset:0;overscroll-behavior:none;-webkit-overflow-scrolling:auto}#gameShell,#arena,#gameViewport,canvas{touch-action:none;overscroll-behavior:none}
 
 body{display:block}
 #appSplash{position:fixed;z-index:9999;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#11110f;color:#fff;transition:opacity .55s ease,visibility .55s ease}
@@ -252,6 +253,7 @@ header{padding:0 12px}
 .friendCodeCard{grid-template-columns:1fr auto}.friendCodeCard span{grid-column:1/-1}.friendCodeCard b{font-size:12px}
 .friendRow{grid-template-columns:10px minmax(0,1fr) auto auto;gap:6px;padding:8px 7px}
 #gestureHint span{display:none}
+#startCard p,#onlineLobby p,#resultCard p,#startCard button,#onlineLobby button,#resultCard button,#upgradesCard button{font-size:clamp(11px,2.9vw,14px)}#startCard small,#onlineLobby small,#upgradesCard small{font-size:clamp(9px,2.4vw,11px)}#settingsButton{padding-inline:7px;font-size:9px}
 #startCard{padding:28px 24px}
 #startCard{padding-top:165px;min-height:400px}.coverArt{height:140px}.coverTarget{right:34px;top:20px;width:88px;height:88px;border-width:6px}.coverTarget i{left:35px;top:35px}.coverTarget b{height:118px}.coverSpear{left:25px;top:89px;width:134px}.coverSpark.one{left:177px}.coverSpark.two{left:197px;top:112px}
 }

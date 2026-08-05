@@ -828,5 +828,8 @@
   if(closeSettings)closeSettings.onclick=()=>{if(settingsPanel)settingsPanel.hidden=true;};
   if(settingsPanel)settingsPanel.addEventListener('click',event=>{if(event.target===settingsPanel)settingsPanel.hidden=true;});
   if(settingsAccountButton)settingsAccountButton.onclick=()=>{if(settingsPanel)settingsPanel.hidden=true;showAccountGate(currentAccountName?'login':'login');};
+  // Keep page swipes inside the arena and make phone UI just a little easier to read.
+  const touchSurface=document.querySelector('#gameViewport')||arena;const stopPageSwipe=event=>{if(event.target.closest?.('input,textarea,select'))return;event.preventDefault();};touchSurface?.addEventListener('touchmove',stopPageSwipe,{passive:false});touchSurface?.addEventListener('touchstart',event=>{if(!event.target.closest?.('input,textarea,select'))event.stopPropagation();},{passive:true});document.addEventListener('gesturestart',event=>event.preventDefault(),{passive:false});
+  const phoneFitResize=resize;resize=()=>{phoneFitResize();const box=arena.getBoundingClientRect(),stage=document.querySelector('#gameViewport');if(stage&&box.width<=650){const fit=Math.min(box.width/1200,box.height/570),fill=Math.max(box.width/1200,box.height/570);stage.style.transform=`translate(-50%,-50%) scale(${Math.min(fill,fit*1.025)})`;}};
   window.addEventListener('resize',resize);if(window.visualViewport)window.visualViewport.addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe(arena);else setInterval(resize,750);loadUpgrades();resize();requestAnimationFrame(loop);
 })();
