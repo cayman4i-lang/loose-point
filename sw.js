@@ -1,4 +1,4 @@
-const CACHE='loose-point-app-v60-direct-input-focus';
+const CACHE='loose-point-app-v61-standalone-inputs';
 const SHELL=['/','/index.html','/styles.css','/game.js','/manifest.webmanifest','/icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
