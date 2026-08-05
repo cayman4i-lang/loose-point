@@ -1,4 +1,4 @@
-const CACHE='loose-point-app-v61-standalone-inputs';
+const CACHE='loose-point-app-v63-custom-keyboard-tap';
 const SHELL=['/','/index.html','/styles.css','/game.js','/manifest.webmanifest','/icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
