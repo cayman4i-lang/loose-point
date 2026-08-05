@@ -221,6 +221,8 @@ h1 em{color:var(--acid);font-style:normal}
 .lifeReadout{display:flex;justify-content:space-between;align-items:center;border:1px solid #555;padding:18px;margin-bottom:12px}
 .lifeReadout span{font-size:9px;color:#999}
 .lifeReadout b{color:var(--red);letter-spacing:5px}
+#lifeCount{display:grid;grid-template-columns:repeat(5,max-content);gap:2px 7px;line-height:1;letter-spacing:0!important}
+#lifeCount i{font-style:normal}
 #upgradesCard .backButton{background:transparent;color:#999;padding-left:0;margin-top:10px;font:10px 'DM Mono'}
 
 #arenaRoulette{width:min(820px,94vw);padding-inline:25px;overflow:hidden}
