@@ -23,8 +23,9 @@
     <header>
       <div class="brand"><b>LOOSE</b><span>POINT</span></div>
       <div id="roundLabel">FIRST TO 3</div>
-      <div class="headerActions"><button id="homeButton" hidden>RETURN HOME</button><button id="soundButton" aria-label="Toggle sound">SOUND ON</button></div>
+      <div class="headerActions"><button id="homeButton" hidden>RETURN HOME</button><button id="settingsButton" aria-label="Open settings">⚙ SETTINGS</button></div>
     </header>
+    <section id="settingsPanel" class="settingsPanel" hidden><div class="settingsCard"><button id="closeSettings" class="settingsClose">×</button><p class="eyebrow">GAME SETTINGS</p><h2>SETTINGS</h2><button id="soundButton" aria-label="Toggle sound">SOUND ON</button><button id="settingsAccountButton">ACCOUNT</button></div></section>
     <section id="arena" aria-label="Floppy spear duel game">
       <div id="gameViewport">
       <canvas id="game"></canvas>

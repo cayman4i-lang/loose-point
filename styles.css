@@ -66,6 +66,7 @@ canvas:active{cursor:grabbing}
 #splitButton small{margin-top:4px;font-size:8px;font-weight:bold}
 #splitButton:disabled{opacity:.65;cursor:default}
 #soundButton{touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.settingsPanel{position:fixed;inset:0;z-index:8500;display:grid;place-items:center;background:rgba(8,10,18,.72)}.settingsPanel[hidden]{display:none}.settingsCard{position:relative;width:min(420px,calc(100vw - 32px));padding:32px;background:#151617;color:#f5f5f5;border:3px solid #d8ff28;box-shadow:10px 10px #8da600;display:flex;flex-direction:column;gap:14px}.settingsCard h2{margin:0 0 12px;font:700 42px Georgia,serif}.settingsCard button{background:#d8ff28;color:#151617;border:0;padding:13px;font:700 14px 'DM Mono';cursor:pointer}.settingsCard .settingsClose{position:absolute;right:10px;top:8px;background:transparent;color:#fff;font-size:28px;padding:2px 8px}.settingsCard .eyebrow{color:#d8ff28;letter-spacing:2px;margin:0}
 
 #gestureHint{position:absolute;right:clamp(20px,5vw,65px);bottom:clamp(30px,7vh,65px);display:flex;align-items:center;gap:12px;color:#5d5a51;font-size:10px;font-weight:bold;letter-spacing:.1em;pointer-events:none;opacity:.8}
 #gestureHint i{width:50px;height:2px;background:#5d5a51;position:relative}
