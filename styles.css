@@ -116,6 +116,7 @@ h1 em{color:var(--acid);font-style:normal}
 #rankBadge i span{display:block;height:100%;width:0;background:var(--acid)}
 #rankBadge em{font:7px 'DM Mono';color:#aaa99c;letter-spacing:.04em}
 #startCard .secondaryButton{margin-top:10px;background:transparent;color:white;border:1px solid #5f5f55}
+.abilityExtraActions{display:grid;gap:8px;margin-top:10px}.abilityExtraActions button{font-size:10px!important;padding:11px 13px!important}.abilityExtraActions button:disabled{opacity:.45;cursor:not-allowed}
 .lobbyActions{display:grid;gap:10px}
 #onlineLobby{width:min(650px,94vw);max-height:min(530px,90vh);overflow-y:auto}
 #friendsPanel{display:grid;gap:8px;margin-top:15px;padding:13px;border:1px solid #4e4e46;background:#10100d}
