@@ -116,7 +116,6 @@ h1 em{color:var(--acid);font-style:normal}
 #rankBadge i span{display:block;height:100%;width:0;background:var(--acid)}
 #rankBadge em{font:7px 'DM Mono';color:#aaa99c;letter-spacing:.04em}
 #startCard .secondaryButton{margin-top:10px;background:transparent;color:white;border:1px solid #5f5f55}
-.abilityExtraActions{display:grid;gap:8px;margin-top:10px}.abilityExtraActions button{font-size:10px!important;padding:11px 13px!important}.abilityExtraActions button:disabled{opacity:.45;cursor:not-allowed}
 .lobbyActions{display:grid;gap:10px}
 #onlineLobby{width:min(650px,94vw);max-height:min(530px,90vh);overflow-y:auto}
 #friendsPanel{display:grid;gap:8px;margin-top:15px;padding:13px;border:1px solid #4e4e46;background:#10100d}
@@ -138,6 +137,8 @@ h1 em{color:var(--acid);font-style:normal}
 .incomingFriendRequest button{min-width:34px;padding:6px 8px;font:700 11px 'DM Mono',monospace;border:1px solid #777;background:#2b2b27;color:#fff;cursor:pointer}
 .incomingFriendRequest .incomingAccept{background:var(--acid);color:#111;border-color:#111}
 .incomingFriendRequest .incomingDeny{background:#3a2525;color:#fff}
+.lobbyBottomActions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lobbyBottomActions .backButton{margin-top:0}
 #friendsList>small{padding:8px;color:#7e7e74;font-size:8px;letter-spacing:.08em;text-align:center}
 .friendRow{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;align-items:center;gap:9px;padding:9px 10px;border:1px solid #3f3f38;background:#1b1b17}
 .friendLight{width:10px;height:10px;border-radius:50%;background:#e74b42;box-shadow:0 0 8px rgba(231,75,66,.55)}

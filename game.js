@@ -369,6 +369,17 @@
   initPresence=()=>{if(!window.Peer||presencePeer?.open)return;try{presencePeer?.destroy();}catch(_){}const p=presencePeer=new Peer('lp-user-'+friendCode.toLowerCase());p.on('connection',bindPresenceConnection);p.on('open',()=>{refreshFriends();});p.on('disconnected',schedulePresenceRestart);p.on('close',schedulePresenceRestart);p.on('error',schedulePresenceRestart);};
   const directHostRoom=hostRoom;hostRoom=()=>{directHostRoom();let tries=0;const announce=setInterval(()=>{tries++;if(netMode!=='host'||tries>12){clearInterval(announce);return;}if(hostedRoomId){refreshFriends();clearInterval(announce);}},250);};
   loadNearbyRooms=()=>{const box=document.querySelector('#nearbyRooms');if(box)box.innerHTML='<small>FRIEND ROOMS SHOW ABOVE WHEN A FRIEND HAS THE GAME OPEN.</small>';};
+  const roomPresenceSnapshot=presenceSnapshot;
+  presenceSnapshot=()=>{const snapshot=roomPresenceSnapshot();if(netMode==='guest'&&hostedRoomId){snapshot.roomId=hostedRoomId;snapshot.players=0;}return snapshot;};
+  // Room IDs are shared only through a friend's private presence connection; never publish them to a public directory.
+  publishRoom=async()=>{};
+  keepRoomListed=()=>{};
+  function showRoomNotice(message){const old=document.querySelector('.roomNotice');old?.remove();const notice=document.createElement('div');notice.className='roomNotice';notice.textContent=message;document.querySelector('#onlineLobby')?.appendChild(notice);setTimeout(()=>notice.remove(),2600);}
+  async function joinFirstAvailableRoom(){if(netMode!=='local'||joinBusy||peer||conn)return;const status=document.querySelector('#lobbyStatus');if(status)status.textContent='LOOKING FOR A FRIEND\'S ROOM...';const rooms=friendProfiles.map(friend=>friendStates.get(friend.code)).filter(state=>state?.online&&state.roomId).map(state=>({roomId:state.roomId}));const room=rooms.find(item=>item?.roomId);if(!room){showRoomNotice('NO ROOM AVAILABLE');if(status)status.textContent='NO ROOM AVAILABLE.';return;}const roomId=String(room.roomId).trim().toLowerCase();document.querySelector('#roomInput').value=roomId;joinRoom();}
+  document.querySelector('#joinFirstRoomButton')?.addEventListener('click',joinFirstAvailableRoom);
+  renderIncomingFriendRequests();
+  const stableBindConnection=bindConnection;
+  bindConnection=function(friendConn){stableBindConnection(friendConn);if(netMode==='guest'){friendConn.on('error',()=>{if(!leavingRoom)resetFailedJoin('COULD NOT CONNECT TO THAT ROOM. CHECK THE CODE AND TRY AGAIN.');});}};
   clearInterval(friendRefreshTimer);friendRefreshTimer=setInterval(refreshFriends,3000);
   if(!presencePeer?.open)schedulePresenceRestart();
   // Ricochet is the second ability: buy it after Freeze, then spend a charge on bouncing shots.
@@ -491,12 +502,16 @@
     try{peer?.destroy();}catch(_){}
     peer=conn=null;joinBusy=false;hostedRoomId='';clients=[];
     hardHostRoom();
+    setTimeout(()=>{if(peer&&netMode==='host')peer.on('connection',roomConnection=>roomConnection.on('open',()=>{try{roomConnection.send({type:'room-info',roomId:hostedRoomId});}catch(_){}}));},500);
     setTimeout(refreshFriends,900);
   };
   const hardJoinRoom=joinRoom;
   joinRoom=function(){
     if(joinBusy)return;
     if(netMode!=='local'||peer||conn){try{peer?.destroy();}catch(_){}try{conn?.close();}catch(_){}peer=conn=null;netMode='local';}
+    const field=document.querySelector('#roomInput'),typed=String(field?.value||'').trim().toLowerCase();
+    if(!typed){document.querySelector('#lobbyStatus').textContent='ENTER A ROOM CODE FIRST.';return;}
+    if(field)field.value=typed.startsWith('loose-')?typed:'loose-'+typed;
     hardJoinRoom();
     setTimeout(()=>{if(joinBusy&&netMode==='guest')resetFailedJoin('CONNECTION TIMED OUT. CHECK THE ROOM CODE AND TRY AGAIN.');},12000);
   };
@@ -771,6 +786,8 @@
   refreshScores=()=>{knockoutRefreshScores();if(isKnockout()){document.body.classList.add('multiplayerMode');document.querySelector('.bot-score').hidden=true;renderKnockoutHud();}else knockoutHud.hidden=true;};
   const knockoutHandleData=handleNetData;
   handleNetData=(data,client)=>{if(data?.type==='mode'){multiplayerRule=data.rule==='knockout'?'knockout':'normal';paintModeChoice();refreshScores();return;}knockoutHandleData(data,client);};
+  const roomWelcomeHandleData=handleNetData;
+  handleNetData=(data,client)=>{if(data?.type==='welcome'&&netMode==='guest'&&data.roomId)hostedRoomId=String(data.roomId).slice(0,32);if(data?.type==='room-info'&&netMode==='guest'&&data.roomId)hostedRoomId=String(data.roomId).slice(0,32);roomWelcomeHandleData(data,client);};
   const knockoutResetRound=resetRound;
   resetRound=()=>{knockoutResetRound();if(!isKnockout()||!knockoutRoster)return;for(const saved of knockoutRoster){const f=allFighters().find(item=>item.side===saved.side);if(f)Object.assign(f,{hp:saved.hp,maxHp:saved.maxHp,dead:saved.dead,away:saved.away,hideCorpse:saved.hideCorpse});}renderKnockoutHud();};
   const knockoutCheckVictory=checkVictory;
