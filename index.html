@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon.png" />
   <link rel="icon" type="image/png" href="icon.png" />
-  <title>Loose Point — Floppy Spear Duel</title>
+  <title>Loose Point â€” Floppy Spear Duel</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -23,23 +23,23 @@
     <header>
       <div class="brand"><b>LOOSE</b><span>POINT</span></div>
       <div id="roundLabel">FIRST TO 3</div>
-      <div class="headerActions"><button id="homeButton" hidden>RETURN HOME</button><button id="settingsButton" aria-label="Open settings">⚙ SETTINGS</button></div>
+      <div class="headerActions"><button id="homeButton" hidden>RETURN HOME</button><button id="settingsButton" aria-label="Open settings">âš™ SETTINGS</button></div>
     </header>
-    <section id="settingsPanel" class="settingsPanel" hidden><div class="settingsCard"><button id="closeSettings" class="settingsClose">×</button><p class="eyebrow">GAME SETTINGS</p><h2>SETTINGS</h2><button id="soundButton" aria-label="Toggle sound">SOUND ON</button><button id="settingsAccountButton">ACCOUNT</button></div></section>
+    <section id="settingsPanel" class="settingsPanel" hidden><div class="settingsCard"><button id="closeSettings" class="settingsClose">Ã—</button><p class="eyebrow">GAME SETTINGS</p><h2>SETTINGS</h2><button id="soundButton" aria-label="Toggle sound">SOUND ON</button><button id="settingsAccountButton">ACCOUNT</button></div></section>
     <section id="arena" aria-label="Floppy spear duel game">
       <div id="gameViewport">
       <canvas id="game"></canvas>
       <div id="airChallenge" hidden><b>AIRBORNE</b><span>0.0 / 7.0</span></div>
       <div id="startCard">
-        <div id="rankBadge"><div id="rankEmblem" class="rank-wood" aria-hidden="true"><span>◆</span></div><div class="rankBadgeCopy"><small>RANK</small><b id="rankName">WOOD I</b><i><span id="rankProgress"></span></i><em id="rankXp">0 / 100 XP</em></div></div>
+        <div id="rankBadge"><div id="rankEmblem" class="rank-wood" aria-hidden="true"><span>â—†</span></div><div class="rankBadgeCopy"><small>RANK</small><b id="rankName">WOOD I</b><i><span id="rankProgress"></span></i><em id="rankXp">0 / 100 XP</em></div></div>
         <div class="eyebrow">A FLOPPY SPEAR DUEL</div>
         <h1>HIT THE<br><em>POINT.</em></h1>
-        <button id="startButton">ENTER THE PIT <span>→</span></button>
-        <button id="onlineButton" class="secondaryButton">PLAY ONLINE <span>⌁</span></button>
-        <button id="upgradesButton" class="secondaryButton">CUSTOMIZE <span id="homeCoins">◉ 0</span></button>
+        <button id="startButton">ENTER THE PIT <span>â†’</span></button>
+        <button id="onlineButton" class="secondaryButton">PLAY ONLINE <span>âŒ</span></button>
+        <button id="upgradesButton" class="secondaryButton">CUSTOMIZE <span id="homeCoins">â—‰ 0</span></button>
       </div>
       <div id="upgradesCard" hidden>
-        <div class="upgradeHeader"><div><div class="eyebrow">YOUR FIGHTER</div><h2>LOADOUT</h2></div><b id="coinCount">◉ 0</b></div>
+        <div class="upgradeHeader"><div><div class="eyebrow">YOUR FIGHTER</div><h2>LOADOUT</h2></div><b id="coinCount">â—‰ 0</b></div>
         <div class="upgradeTabs">
           <button data-tab="colors" class="active">COLOR</button>
           <button data-tab="clothes">CLOTHES</button>
@@ -48,20 +48,20 @@
         </div>
         <div id="colorsPanel" class="upgradePanel"><div id="colorChoices"></div><p>New colors cost 5 coins. Owned colors can be equipped anytime.</p></div>
         <div id="clothesPanel" class="upgradePanel" hidden>
-          <div id="secretUnlockNotice" hidden>NEW GUY UNLOCKED — SPACEMAN</div>
+          <div id="secretUnlockNotice" hidden>NEW GUY UNLOCKED â€” SPACEMAN</div>
           <div id="skinChoices"></div>
-          <div id="skinDetail"><div><b id="skinDetailName">CLASSIC</b><small id="skinDetailStats">1 THROW · 1 DAMAGE · 1 COIN/HIT · 3 COINS/KILL</small></div><button id="skinActionButton">EQUIPPED</button></div>
+          <div id="skinDetail"><div><b id="skinDetailName">CLASSIC</b><small id="skinDetailStats">1 THROW Â· 1 DAMAGE Â· 1 COIN/HIT Â· 3 COINS/KILL</small></div><button id="skinActionButton">EQUIPPED</button></div>
         </div>
-        <div id="livesPanel" class="upgradePanel" hidden><div class="lifeReadout"><span>STARTING LIVES</span><b id="lifeCount">♥ ♥ ♥</b></div><button id="buyLifeButton">ADD ONE LIFE — ◉ 10</button><p>Upgrade up to seven times for a maximum of ten lives.</p></div>
+        <div id="livesPanel" class="upgradePanel" hidden><div class="lifeReadout"><span>STARTING LIVES</span><b id="lifeCount">â™¥ â™¥ â™¥</b></div><button id="buyLifeButton">ADD ONE LIFE â€” â—‰ 10</button><p>Upgrade up to seven times for a maximum of ten lives.</p></div>
         <div id="abilitiesPanel" class="upgradePanel" hidden>
           <div id="abilityPicker" aria-label="Choose one equipped ability">
-            <div class="abilityChoice"><button class="abilityPick selected" data-ability="freeze" aria-label="Select Freeze Arrow"><i class="freezeIcon">❄</i><small>FREEZE</small><em hidden>LOCKED</em></button><button class="abilityCardAction" data-ability-action="freeze">SECRET</button></div>
+            <div class="abilityChoice"><button class="abilityPick selected" data-ability="freeze" aria-label="Select Freeze Arrow"><i class="freezeIcon">â„</i><small>FREEZE</small><em hidden>LOCKED</em></button><button class="abilityCardAction" data-ability-action="freeze">SECRET</button></div>
             <div class="abilityChoice"><button class="abilityPick locked" data-ability="ricochet" aria-label="View Ricochet"><i class="ricochetIcon"><b></b></i><small>RICOCHET</small><em>LOCKED</em></button><button class="abilityCardAction" data-ability-action="ricochet">LOCKED</button></div>
             <div class="abilityChoice"><button class="abilityPick locked" data-ability="split" aria-label="View Split Shot"><i class="splitIcon"><b></b></i><small>SPLIT</small><em>LOCKED</em></button><button class="abilityCardAction" data-ability-action="split">LOCKED</button></div>
           </div>
           <div id="abilityDetail">
             <div class="eyebrow" id="abilityEyebrow">SECRET ABILITY</div><h3 id="abilityName">FREEZE ARROW</h3><p id="abilityDescription">Your charged next shot freezes one fighter for 1.5 seconds.</p>
-            <div class="abilityActions" hidden><button id="abilityActionButton">UPGRADE — ◉ 30</button><button id="unlockRicochetButton">BUY RICOCHET — ◉ 700</button></div>
+            <div class="abilityActions" hidden><button id="abilityActionButton">UPGRADE â€” â—‰ 30</button><button id="unlockRicochetButton">BUY RICOCHET â€” â—‰ 700</button></div>
           </div>
           <div id="abilityLegacyControls" hidden>
             <p id="freezeAbilityText"></p><button id="freezeUpgradeButton"></button>
@@ -69,7 +69,7 @@
             <p id="splitAbilityText"></p><button id="splitAbilityButton"></button>
           </div>
         </div>
-        <button id="closeUpgrades" class="backButton">← BACK TO HOME</button>
+        <button id="closeUpgrades" class="backButton">â† BACK TO HOME</button>
       </div>
       <div id="onlineLobby" hidden>
         <div class="eyebrow">PEER-TO-PEER FREE-FOR-ALL</div>
@@ -90,7 +90,7 @@
         </section>
         <div id="nearbyRooms"><small>CHECKING NEARBY ROOMS...</small></div>
         <div id="roomCode" hidden><span>YOUR ROOM CODE</span><b id="roomCodeText"></b><button id="copyRoomButton">COPY CODE</button></div>
-        <div class="lobbyBottomActions"><button id="backButton" class="backButton">← BACK</button><button id="joinFirstRoomButton" class="backButton">JOIN FIRST ROOM</button></div>
+        <div class="lobbyBottomActions"><button id="backButton" class="backButton">â† BACK</button><button id="joinFirstRoomButton" class="backButton">JOIN FIRST ROOM</button></div>
       </div>
       <div id="arenaRoulette" hidden>
         <div class="eyebrow">CHOOSING THE PIT</div>
@@ -102,12 +102,12 @@
         <div class="eyebrow" id="resultEyebrow">ROUND OVER</div>
         <h2 id="resultTitle">POINT!</h2>
         <p id="resultText"></p>
-        <button id="againButton">NEXT ROUND <span>→</span></button>
+        <button id="againButton">NEXT ROUND <span>â†’</span></button>
       </div>
       <div class="score player-score"><span>YOU</span><b id="playerScore">0</b></div>
       <div class="score bot-score"><span>BOT</span><b id="botScore">0</b></div>
       <button id="throwButton" aria-label="Throw spear">
-        <span class="throwIcon">↗</span><b>THROW</b><small id="ammoLabel">SPEAR READY</small>
+        <span class="throwIcon">â†—</span><b>THROW</b><small id="ammoLabel">SPEAR READY</small>
       </button>
       <button id="vanishButton" aria-label="Vanish for ten seconds" hidden>VANISH</button>
       <button id="freezeButton" aria-label="Use charged freeze arrow" hidden><b>FREEZE</b><small>READY</small></button>
@@ -117,7 +117,21 @@
     </section>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
-  <script src="game.js"></script>
-  <script>window.addEventListener('load',()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');setTimeout(()=>document.querySelector('#appSplash')?.classList.add('hide'),850);setTimeout(()=>document.querySelector('#appSplash')?.remove(),1450);});</script>
+  <script src="game.js?v=70"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if ('serviceWorker' in navigator && navigator.serviceWorker && navigator.serviceWorker.register) {
+        navigator.serviceWorker.register('sw.js');
+      }
+      setTimeout(function () {
+        var splash = document.querySelector('#appSplash');
+        if (splash && splash.classList) splash.classList.add('hide');
+      }, 850);
+      setTimeout(function () {
+        var splash = document.querySelector('#appSplash');
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 1450);
+    });
+  </script>
 </body>
 </html>
