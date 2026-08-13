@@ -1,4 +1,4 @@
-const CACHE='loose-point-app-v71-spider-unlock';
+const CACHE='loose-point-app-v72-old-device-fix';
 const SHELL=['/','/index.html','/styles.css','/game.js','/manifest.webmanifest','/icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));

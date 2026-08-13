@@ -38,6 +38,99 @@
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
+  (function legacyCanvasAndRuntimeFallbacks() {
+    var g = typeof window !== "undefined" ? window : this;
+    if (typeof g.globalThis === "undefined") g.globalThis = g;
+    if (g.Math && !g.Math.hypot) g.Math.hypot = function() {
+      var sum = 0, i;
+      for (i = 0; i < arguments.length; i++) {
+        var n = Number(arguments[i]) || 0;
+        sum += n * n;
+      }
+      return Math.sqrt(sum);
+    };
+    if (g.Number && !g.Number.isFinite) g.Number.isFinite = function(v) {
+      return typeof v === "number" && isFinite(v);
+    };
+    if (g.Object && !g.Object.fromEntries) g.Object.fromEntries = function(entries) {
+      var out = {}, i, item;
+      for (i = 0; i < entries.length; i++) {
+        item = entries[i];
+        if (item && item.length > 1) out[item[0]] = item[1];
+      }
+      return out;
+    };
+    if (g.Array && !g.Array.from) g.Array.from = function(value) {
+      var out = [], i;
+      for (i = 0; i < value.length; i++) out.push(value[i]);
+      return out;
+    };
+    if (g.String && !g.String.prototype.includes) g.String.prototype.includes = function(search, start) {
+      return this.indexOf(search, start || 0) !== -1;
+    };
+    if (g.Array && !g.Array.prototype.includes) g.Array.prototype.includes = function(search, start) {
+      var i = start || 0;
+      if (i < 0) i = Math.max(0, this.length + i);
+      for (; i < this.length; i++) if (this[i] === search) return true;
+      return false;
+    };
+    if (!g.requestAnimationFrame) g.requestAnimationFrame = function(fn) {
+      return g.setTimeout(function() {
+        fn(Date.now());
+      }, 16);
+    };
+    if (!g.cancelAnimationFrame) g.cancelAnimationFrame = function(id) {
+      g.clearTimeout(id);
+    };
+    if (!g.ResizeObserver) g.ResizeObserver = function() {
+      this.observe = function() {
+      };
+      this.disconnect = function() {
+      };
+    };
+    var p = g.CanvasRenderingContext2D && g.CanvasRenderingContext2D.prototype;
+    if (!p) return;
+    if (!p.ellipse) p.ellipse = function(x, y, rx, ry, rotation, start, end, anticlockwise) {
+      if (!this.save || !this.arc) return;
+      this.save();
+      this.translate(x, y);
+      this.rotate(rotation || 0);
+      this.scale(rx, ry);
+      this.arc(0, 0, 1, start || 0, end === void 0 ? Math.PI * 2 : end, anticlockwise);
+      this.restore();
+    };
+    if (!p.roundRect) p.roundRect = function(x, y, w, h, r) {
+      var rr;
+      if (typeof r === "number") rr = [r, r, r, r];
+      else if (r && r.length) {
+        rr = [r[0] || 0, r[1] === void 0 ? r[0] || 0 : r[1], r[2] === void 0 ? r[0] || 0 : r[2], r[3] === void 0 ? r[1] === void 0 ? r[0] || 0 : r[1] : r[3]];
+      } else rr = [0, 0, 0, 0];
+      var max = Math.min(Math.abs(w) / 2, Math.abs(h) / 2);
+      rr[0] = Math.min(Math.max(0, rr[0]), max);
+      rr[1] = Math.min(Math.max(0, rr[1]), max);
+      rr[2] = Math.min(Math.max(0, rr[2]), max);
+      rr[3] = Math.min(Math.max(0, rr[3]), max);
+      this.moveTo(x + rr[0], y);
+      this.lineTo(x + w - rr[1], y);
+      this.quadraticCurveTo(x + w, y, x + w, y + rr[1]);
+      this.lineTo(x + w, y + h - rr[2]);
+      this.quadraticCurveTo(x + w, y + h, x + w - rr[2], y + h);
+      this.lineTo(x + rr[3], y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - rr[3]);
+      this.lineTo(x, y + rr[0]);
+      this.quadraticCurveTo(x, y, x + rr[0], y);
+      return this;
+    };
+    if (!p.setLineDash) p.setLineDash = function() {
+    };
+    if (!p.getLineDash) p.getLineDash = function() {
+      return [];
+    };
+    if (!p.setTransform) p.setTransform = function(a, b, c, d, e, f) {
+      if (this.resetTransform) this.resetTransform();
+      if (this.transform) this.transform(a, b, c, d, e, f);
+    };
+  })();
   (() => {
     var _a, _b, _c, _d;
     const canvas = document.querySelector("#game");
