@@ -147,8 +147,8 @@
     let ground = 0, particles = [], spears = [], platforms = [], caveSpikes = [], portals = [], doors = [], moonAsteroids = [], moonAsteroidTimer = 0, swipe = null, shake = 0, audio = null;
     const colors = { ink: "#171713", paper: "#e8e2d4", acid: "#e5ff3f", red: "#ff4e32", blue: "#4d69ff" };
     const colorShop = [["BLUE", "#4d69ff"], ["RED", "#ff4e32"], ["GREEN", "#28b66f"], ["YELLOW", "#f1dc32"], ["ORANGE", "#ff8a2b"], ["PURPLE", "#a75bff"], ["SILVER", "#b9c1c8"], ["BLACK", "#171713"]];
-    const skinShop = [{ id: "classic", name: "CLASSIC", cost: 0, desc: "THE ORIGINAL" }, { id: "ninja", name: "NINJA", cost: 100, desc: "TWO BOUNCING NINJA STARS" }, { id: "samurai", name: "SAMURAI", cost: 60, desc: "TWO SPINNING KATANAS" }, { id: "santa", name: "SANTA", cost: 20, desc: "RED SUIT, HAT, AND BEARD" }, { id: "snowman", name: "SNOWMAN", cost: 25, desc: "SNOWBALLS + STICK LIMBS" }, { id: "web", name: "SPIDER-MAN", cost: 50, desc: "UPGRADED WEB CRAWLER" }, { id: "iron", name: "IRON HERO", cost: 75, desc: "HOLD FOR A 2-SECOND BEAM" }, { id: "gladiator", name: "GLADIATOR", cost: 65, desc: "ELECTRIC ORBITING MACE" }, { id: "phantom", name: "MR. INVISIBLE", cost: 700, desc: "10-SECOND STILL INVISIBILITY" }, { id: "spaceman", name: "SPACEMAN", cost: 0, desc: "ZERO-GRAVITY DRIFT" }, { id: "sheep", name: "SHEEP", cost: 150, desc: "PULLING SHOCKWAVE + BITE" }, { id: "trojan", name: "TROJAN", cost: 400, desc: "AIMED SHIELD DEFLECTS SPEARS" }, { id: "acid", name: "ACID", cost: 500, desc: "TOUCH DAMAGE \u2014 NO SPEAR" }, { id: "captain", name: "CAPTAIN AMERICA", cost: 300, desc: "RETURNING THREE-BOUNCE SHIELD" }, { id: "army", name: "ARMY", cost: 400, desc: "BULLETS, KNIVES, AND HIDDEN MINES" }, { id: "flubber", name: "FLUBBER", cost: 300, desc: "BOUNCY TWO-ARM SLAM" }];
-    skinShop.push({ id: "spider", name: "SPIDER", cost: 0, desc: "SECRET SIX-ARM PULL" }, { id: "tank", name: "TANK", cost: 900, desc: "SLOW SHELLS, 3 DAMAGE, SPLASH BLAST" });
+    const skinShop = [{ id: "classic", name: "CLASSIC", cost: 0, desc: "THE ORIGINAL" }, { id: "ninja", name: "NINJA", cost: 100, desc: "TWO BOUNCING NINJA STARS" }, { id: "samurai", name: "SAMURAI", cost: 60, desc: "TWO SPINNING KATANAS" }, { id: "santa", name: "SANTA", cost: 20, desc: "RED SUIT, HAT, AND BEARD" }, { id: "snowman", name: "SNOWMAN", cost: 25, desc: "SNOWBALLS + STICK LIMBS" }, { id: "web", name: "SPIDER-MAN", cost: 50, desc: "UPGRADED WEB CRAWLER" }, { id: "iron", name: "IRON HERO", cost: 75, desc: "HOLD FOR A 2-SECOND BEAM" }, { id: "gladiator", name: "THOR", cost: 65, desc: "SPINNING HAMMER + CURVING LIGHTNING" }, { id: "phantom", name: "MR. INVISIBLE", cost: 700, desc: "10-SECOND STILL INVISIBILITY" }, { id: "spaceman", name: "SPACEMAN", cost: 0, desc: "ZERO-GRAVITY DRIFT" }, { id: "sheep", name: "SHEEP", cost: 150, desc: "PULLING SHOCKWAVE + BITE" }, { id: "trojan", name: "TROJAN", cost: 400, desc: "AIMED SHIELD DEFLECTS SPEARS" }, { id: "acid", name: "ACID", cost: 500, desc: "TOUCH DAMAGE \u2014 NO SPEAR" }, { id: "captain", name: "CAPTAIN AMERICA", cost: 300, desc: "RETURNING THREE-BOUNCE SHIELD" }, { id: "army", name: "ARMY", cost: 400, desc: "BULLETS, KNIVES, AND HIDDEN MINES" }, { id: "flubber", name: "FLUBBER", cost: 300, desc: "BOUNCY TWO-ARM SLAM" }];
+    skinShop.push({ id: "spider", name: "SPIDER", cost: 0, desc: "SECRET SIX-ARM PULL" }, { id: "tank", name: "TANK", cost: 900, desc: "SLOW SHELLS, 3 DAMAGE, SPLASH BLAST" }, { id: "porcupine", name: "PORCUPINE", cost: 450, desc: "FIVE SPIKES + CURL SHIELD" });
     let selectedColor = "#4d69ff", ownedColors = /* @__PURE__ */ new Set(["#4d69ff"]), playerCoins = 0, lifeLevel = 0;
     const LIFE_MAX_LEVEL = 7, LIFE_COSTS = [10, 10, 20, 30, 60, 120, 200];
     const playerLives = () => Math.min(10, 3 + lifeLevel);
@@ -468,7 +468,7 @@
       roundWait = false;
       resultCard.hidden = true;
       throwBtn.classList.remove("cooldown");
-      document.querySelector("#ammoLabel").textContent = player.skin === "gladiator" ? "MACE ACTIVE" : player.skin === "iron" ? "HOLD FOR BEAM" : player.maxThrows === 2 ? "2 SHOTS READY" : "SHOT READY";
+      document.querySelector("#ammoLabel").textContent = player.skin === "gladiator" ? "LIGHTNING READY" : player.skin === "iron" ? "HOLD FOR BEAM" : player.maxThrows === 2 ? "2 SHOTS READY" : "SHOT READY";
     }
     function beep(freq = 180, dur = 0.06, type = "square", gain = 0.035) {
       if (!soundOn) return;
@@ -602,7 +602,7 @@
         return;
       }
       attacker.coins = (attacker.coins || 0) + 1;
-      target.hp -= attacker.skin === "gladiator" ? 2 : 1;
+      target.hp -= attacker.damageOverride != null ? attacker.damageOverride : attacker.skin === "gladiator" ? 1.5 : 1;
       target.stun = 0.45;
       target.blink = 0.28;
       target.vx += ix * knock;
@@ -2168,7 +2168,7 @@
       shake = Math.max(shake * 0.8, d.shake || 0);
       netFirst = false;
       const me = localFighter();
-      document.querySelector("#ammoLabel").textContent = me.skin === "gladiator" ? "MACE ACTIVE" : me.skin === "iron" ? me.beamActive ? "BEAM FIRING" : me.hasSpear ? "HOLD FOR BEAM" : "RECHARGING" : me.maxThrows === 2 ? me.hasSpear ? me.throwsLeft + " SHOT" + (me.throwsLeft === 1 ? "" : "S") + " READY" : "COMING BACK" : me.hasSpear ? "SHOT READY" : "COMING BACK";
+      document.querySelector("#ammoLabel").textContent = me.skin === "gladiator" ? "LIGHTNING READY" : me.skin === "iron" ? me.beamActive ? "BEAM FIRING" : me.hasSpear ? "HOLD FOR BEAM" : "RECHARGING" : me.maxThrows === 2 ? me.hasSpear ? me.throwsLeft + " SHOT" + (me.throwsLeft === 1 ? "" : "S") + " READY" : "COMING BACK" : me.hasSpear ? "SHOT READY" : "COMING BACK";
       throwBtn.classList.toggle("cooldown", !me.hasSpear && me.skin !== "gladiator");
     }
     function loop(t) {
@@ -2764,7 +2764,7 @@
       e.stopPropagation();
       const me = localFighter();
       if (me.skin === "iron") localInput("beamStart");
-      else if (me.skin !== "gladiator") localInput("throw");
+      else localInput("throw");
     });
     window.addEventListener("pointerup", () => {
       if (localFighter().skin === "iron") localInput("beamStop");
@@ -2942,7 +2942,7 @@
       });
       if (netMode !== "host" || !targets.length || t - lastNetSend < 50) return;
       lastNetSend = t;
-      const keys = ["x", "y", "vx", "vy", "angle", "av", "hp", "maxHp", "coins", "color", "skin", "maxThrows", "throwsLeft", "wallStuck", "beamActive", "beamTime", "meleeCooldown", "maceAngle", "onGround", "hasSpear", "cooldown", "stun", "blink", "ai", "dead", "wobble", "shieldTime", "shieldAim", "invisibleTime", "freezeTime", "frozenFace", "freezeOwnerSide", "hasFreezeAbility", "freezeLevel", "freezeCharge", "freezeArmed", "hasRicochetAbility", "ricochetLevel", "ricochetCharge", "ricochetArmedShots", "hasSplitAbility", "splitLevel", "splitCharge", "splitArmed", "shieldOut", "armyShotIndex"];
+      const keys = ["x", "y", "vx", "vy", "angle", "av", "hp", "maxHp", "coins", "color", "skin", "maxThrows", "throwsLeft", "wallStuck", "beamActive", "beamTime", "meleeCooldown", "maceAngle", "onGround", "hasSpear", "cooldown", "stun", "blink", "ai", "dead", "wobble", "shieldTime", "shieldAim", "invisibleTime", "freezeTime", "frozenFace", "freezeOwnerSide", "hasFreezeAbility", "freezeLevel", "freezeCharge", "freezeArmed", "hasRicochetAbility", "ricochetLevel", "ricochetCharge", "ricochetArmedShots", "hasSplitAbility", "splitLevel", "splitCharge", "splitArmed", "shieldOut", "armyShotIndex", "thorCharges", "thorReload", "thorZap", "porcupineSpikesLoaded", "porcupineReload", "porcupineCurl"];
       const clean = (f) => {
         const o = { side: f.side };
         for (const k of keys) o[k] = f[k];
@@ -8638,8 +8638,33 @@
       ctx.shadowColor = "#2caeff";
       ctx.shadowBlur = 11;
       ctx.lineWidth = 3;
+      ctx.rotate(s.a || 0);
+      const bw = s.baseWeapon || "spear";
       ctx.beginPath();
-      ctx.arc(0, 0, s.baseWeapon === "flubberArm" ? 15 : 18, 0, Math.PI * 2);
+      if (bw === "bullet") {
+        ctx.rect(-14, -5, 28, 10);
+      } else if (bw === "knife") {
+        ctx.moveTo(-15, -5);
+        ctx.lineTo(15, 0);
+        ctx.lineTo(-15, 5);
+        ctx.closePath();
+      } else if (bw === "mine") {
+        ctx.roundRect(-13, -13, 26, 26, 5);
+      } else if (bw === "star") {
+        for (let i = 0; i < 8; i++) {
+          const a = i * Math.PI / 4, r = i % 2 ? 7 : 18;
+          const x = Math.cos(a) * r, y = Math.sin(a) * r;
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.closePath();
+      } else {
+        ctx.moveTo(-34, -5);
+        ctx.lineTo(25, -5);
+        ctx.lineTo(34, 0);
+        ctx.lineTo(25, 5);
+        ctx.lineTo(-34, 5);
+        ctx.closePath();
+      }
       ctx.stroke();
       ctx.restore();
     };
@@ -9236,6 +9261,359 @@
       ctx.fillRect(42, -3, 8, 6);
       ctx.restore();
       ctx.restore();
+    };
+    skinStats.porcupine = ["#6e7f8a", "\u2739", "FIVE SPIKES", "CURL SHIELD"];
+    const lpThorPorcApplySkin = applySkin;
+    applySkin = (f, id) => {
+      lpThorPorcApplySkin(f, id);
+      if (f.skin === "gladiator") {
+        f.maxThrows = 2;
+        f.throwsLeft = 2;
+        f.hasSpear = false;
+        f.thorCharges = 2;
+        f.thorReload = 0;
+        f.thorZap = 0;
+      }
+      if (f.skin === "porcupine") {
+        f.maxThrows = 1;
+        f.throwsLeft = 1;
+        f.hasSpear = true;
+        f.porcupineSpikesLoaded = true;
+        f.porcupineReload = 0;
+        f.porcupineCurl = 0;
+      }
+    };
+    const lpThorPorcThrow = throwSpear;
+    throwSpear = (f) => {
+      if ((f == null ? void 0 : f.skin) === "gladiator") {
+        if (!running || roundWait || f.dead || f.invisibleTime > 0 || f.thorCharges <= 0 || f.thorReload > 0) return;
+        const a = faceAngle(f), m = macePosition(f), speed = Math.min(W, H) * 1.05 + 260;
+        f.thorCharges = Math.max(0, f.thorCharges - 1);
+        f.throwsLeft = f.thorCharges;
+        f.hasSpear = f.thorCharges > 0;
+        if (f.thorCharges <= 0) f.thorReload = 2.2;
+        spears.push({ owner: f, weapon: "thorLightning", x: m.x, y: m.y, vx: Math.cos(a) * speed + f.vx * 0.2, vy: Math.sin(a) * speed + f.vy * 0.1, a, spinA: a, stuck: false, life: 3.2, curve: 0.58 });
+        beep(520, 0.13, "sine", 0.06);
+        return;
+      }
+      if ((f == null ? void 0 : f.skin) === "porcupine") {
+        if (!running || roundWait || f.dead || f.invisibleTime > 0 || f.porcupineReload > 0) return;
+        if (!f.porcupineSpikesLoaded) {
+          f.porcupineCurl = 4.5;
+          return;
+        }
+        const a = faceAngle(f) + Math.PI, angles = [-0.78, -0.39, 0, 0.39, 0.78];
+        f.porcupineSpikesLoaded = false;
+        f.hasSpear = false;
+        f.throwsLeft = 0;
+        f.porcupineReload = 2.15;
+        f.cooldown = 2.15;
+        angles.forEach((off, i) => {
+          const q = a + off, speed = Math.min(W, H) * 1.15 + 300;
+          spears.push({ owner: f, weapon: "porcupineSpike", x: f.x + Math.cos(q) * 25, y: f.y - 20 + Math.sin(q) * 25, vx: Math.cos(q) * speed + f.vx * 0.15, vy: Math.sin(q) * speed + f.vy * 0.1, a: q, spinA: q, stuck: false, life: 4.2, spikeIndex: i });
+        });
+        beep(330, 0.16, "triangle", 0.06);
+        return;
+      }
+      lpThorPorcThrow(f);
+    };
+    const lpThorPorcUpdateFighter = updateFighter;
+    updateFighter = (f, dt) => {
+      lpThorPorcUpdateFighter(f, dt);
+      if (f.skin === "gladiator") {
+        f.thorReload = Math.max(0, (f.thorReload || 0) - dt);
+        f.thorZap = Math.max(0, (f.thorZap || 0) - dt);
+        if (f.thorReload <= 0 && f.thorCharges <= 0 && !f.dead) {
+          f.thorCharges = 2;
+          f.throwsLeft = 2;
+          f.hasSpear = false;
+        }
+        f.hasSpear = f.thorCharges > 0 && f.thorReload <= 0;
+        f.throwsLeft = Math.max(0, f.thorCharges || 0);
+        if (f === player && running) {
+          document.querySelector("#ammoLabel").textContent = f.thorReload > 0 ? "HAMMER LOADING" : String(f.thorCharges || 0) + " LIGHTNING READY";
+          throwBtn.classList.toggle("cooldown", f.thorReload > 0);
+        }
+      }
+      if (f.skin === "porcupine") {
+        f.porcupineReload = Math.max(0, (f.porcupineReload || 0) - dt);
+        f.porcupineCurl = Math.max(0, (f.porcupineCurl || 0) - dt);
+        if (f.porcupineReload <= 0) {
+          f.porcupineSpikesLoaded = true;
+          f.hasSpear = true;
+          f.throwsLeft = 1;
+        } else {
+          f.hasSpear = false;
+          f.throwsLeft = 0;
+        }
+        if (f === player && running) {
+          document.querySelector("#ammoLabel").textContent = f.porcupineCurl > 0 ? "CURLED SHIELD" : f.porcupineSpikesLoaded ? "SPIKES READY" : "SPIKES LOADING";
+          throwBtn.classList.toggle("cooldown", f.porcupineReload > 0);
+        }
+      }
+    };
+    const lpThorPorcHit = hit;
+    hit = (target, s) => {
+      if (s.weapon === "thorLightning") {
+        if (target.dead || target.invisibleTime > 0 || s.owner === target) return;
+        if (target.shieldTime > 0 || trojanShieldHit(target, s)) {
+          lpThorPorcHit(target, s);
+          return;
+        }
+        const dx = s.vx, dy = s.vy, d = Math.hypot(dx, dy) || 1, old = s.owner.damageOverride;
+        s.owner.damageOverride = 1;
+        directDamage(s.owner, target, dx / d, dy / d, 560, Math.sign(dx || 1) * 7, "#63ddff");
+        s.owner.damageOverride = old;
+        if (!target.dead) {
+          s.stuck = true;
+          s.stuckTo = target;
+          s.embedX = 0;
+          s.embedY = -12;
+          s.embedAngle = s.a - target.angle;
+          s.life = 1.1;
+          target.thorZap = 1;
+        }
+        return;
+      }
+      if (s.weapon === "porcupineSpike" && target.skin === "porcupine" && target.porcupineSpikesLoaded && target.porcupineCurl <= 0 && s.owner !== target) {
+        const dx = s.vx, dy = s.vy, d = Math.hypot(dx, dy) || 1;
+        deflectProjectile(target, s);
+        directDamage(target, s.owner, dx / d, dy / d, 360, Math.sign(dx || 1) * 6, "#e9d78b");
+        return;
+      }
+      if (s.weapon === "freeze" && s.baseWeapon === "flubberArm" && !target.dead && s.owner !== target) {
+        freezeFighter(target, s.owner, s);
+        return;
+      }
+      lpThorPorcHit(target, s);
+    };
+    const lpThorPorcUpdate = update;
+    update = (dt) => {
+      var _a2, _b2, _c2, _d2;
+      for (const s of spears) if (s.weapon === "thorLightning" && !s.stuck && s.owner && !s.owner.dead) {
+        const foes = allFighters().filter((o) => o !== s.owner && !o.dead && !o.away).map((o) => ({ o, d: Math.hypot(o.x - s.x, o.y - s.y) })).filter((v) => v.d < 430).sort((a, b) => a.d - b.d);
+        if (foes.length) {
+          const desired = Math.atan2(foes[0].o.y - s.y, foes[0].o.x - s.x), cur = Math.atan2(s.vy, s.vx), delta = Math.atan2(Math.sin(desired - cur), Math.cos(desired - cur)), next = cur + Math.max(-s.curve * dt, Math.min(s.curve * dt, delta)), speed = Math.hypot(s.vx, s.vy) || 560;
+          s.vx = Math.cos(next) * speed;
+          s.vy = Math.sin(next) * speed;
+          s.a = next;
+        }
+      }
+      lpThorPorcUpdate(dt);
+      for (const s of spears) if ((s.weapon === "freeze" || s.weapon === "spear") && (s.baseWeapon === "flubberArm" || s.baseWeapon === "spiderArm") && !s.freezeTarget && !s.stuckTo) {
+        if (s.stuck) {
+          s.weapon = "freeze";
+          s.freeze = true;
+          s.returnTimer = (s.returnTimer || 0.25) - dt;
+          if (s.returnTimer <= 0) {
+            s.stuck = false;
+            s.armWall = false;
+            s.life = 2.2;
+            const dx = (((_a2 = s.owner) == null ? void 0 : _a2.x) || s.x) - s.x, dy = (((_b2 = s.owner) == null ? void 0 : _b2.y) || s.y - 20) - s.y, d = Math.hypot(dx, dy) || 1;
+            s.vx = dx / d * 820;
+            s.vy = dy / d * 820;
+            s.a = Math.atan2(s.vy, s.vx);
+          }
+        } else if (s.returnTimer != null) {
+          s.returnTimer -= dt;
+          const dx = (((_c2 = s.owner) == null ? void 0 : _c2.x) || s.x) - s.x, dy = (((_d2 = s.owner) == null ? void 0 : _d2.y) || s.y - 20) - s.y;
+          if (Math.hypot(dx, dy) < 32) s.life = 0;
+        }
+      }
+    };
+    const lpThorPorcDrawSpear = drawSpear;
+    drawSpear = (s) => {
+      var _a2;
+      if (s.weapon === "thorLightning") {
+        const m = s.owner ? macePosition(s.owner) : { x: s.x, y: s.y }, a = Math.atan2(s.y - m.y, s.x - m.x), dist = Math.hypot(s.x - m.x, s.y - m.y);
+        ctx.save();
+        ctx.strokeStyle = "#bff7ff";
+        ctx.shadowColor = "#36dfff";
+        ctx.shadowBlur = 15;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        for (let i = 0; i <= 8; i++) {
+          const t = i / 8, px = m.x + Math.cos(a) * dist * t, py = m.y + Math.sin(a) * dist * t + (i % 2 ? Math.sin(i * 5 + last * 0.03) * 8 : 0);
+          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+        return;
+      }
+      if (s.weapon === "porcupineSpike") {
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(s.a);
+        ctx.strokeStyle = ((_a2 = s.owner) == null ? void 0 : _a2.color) || "#d9e2e8";
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(-18, 0);
+        ctx.lineTo(16, 0);
+        ctx.stroke();
+        ctx.fillStyle = "#f2df9b";
+        ctx.beginPath();
+        ctx.moveTo(25, 0);
+        ctx.lineTo(10, -6);
+        ctx.lineTo(14, 6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+      lpThorPorcDrawSpear(s);
+    };
+    const lpThorPorcDrawFighter = drawFighter;
+    drawFighter = (f) => {
+      if (f.skin !== "porcupine") return lpThorPorcDrawFighter(f);
+      if (f.dead && f.hideCorpse) return;
+      const c = f.color || "#6e7f8a", rot = f.angle - (f.side === "player" ? 0 : Math.PI), bob = Math.sin(f.wobble) * 2, curled = f.porcupineCurl > 0;
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(rot);
+      ctx.fillStyle = "rgba(20,25,30,.16)";
+      ctx.beginPath();
+      ctx.ellipse(0, 37, 30, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = c;
+      ctx.strokeStyle = "#d8e6e8";
+      ctx.lineWidth = 2;
+      if (curled) {
+        ctx.beginPath();
+        ctx.arc(0, -8, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.ellipse(0, -8, 29, 33, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.strokeStyle = "#c8d4da";
+        ctx.lineWidth = 6;
+        for (const side of [-1, 1]) {
+          ctx.beginPath();
+          ctx.moveTo(side * 12, 10);
+          ctx.lineTo(side * 22, 39 + bob);
+          ctx.stroke();
+        }
+        for (let i = 0; i < 10; i++) {
+          const a = -Math.PI * 0.95 + i * (Math.PI * 1.9 / 9), x = Math.cos(a) * 28, y = -14 + Math.sin(a) * 27;
+          ctx.strokeStyle = "#e8d995";
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(x * 0.72, y * 0.72);
+          ctx.lineTo(x * 1.18, y * 1.18);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+      for (let i = 0; i < Math.max(0, Math.ceil(f.hp)); i++) {
+        ctx.fillStyle = c;
+        ctx.fillRect(f.x - (f.maxHp * 14 - 4) / 2 + i * 14, f.y - 78, 10, 4);
+      }
+    };
+    const lpThorPorcDrawSpecial = drawSpecial;
+    drawSpecial = (f) => {
+      lpThorPorcDrawSpecial(f);
+      if (f.skin === "porcupine" && !f.dead && f.porcupineCurl > 0) {
+        ctx.save();
+        ctx.strokeStyle = "#f5e29c";
+        ctx.shadowColor = "#f5e29c";
+        ctx.shadowBlur = 14;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y - 8, 36, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+      if (f.skin === "gladiator" && f.thorZap > 0 && !f.dead) {
+        ctx.save();
+        ctx.strokeStyle = "#d7f8ff";
+        ctx.shadowColor = "#58dcff";
+        ctx.shadowBlur = 12;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(f.x - 18, f.y - 30);
+        ctx.lineTo(f.x - 5, f.y - 16);
+        ctx.lineTo(f.x - 16, f.y - 2);
+        ctx.lineTo(f.x + 3, f.y + 13);
+        ctx.lineTo(f.x + 16, f.y - 3);
+        ctx.stroke();
+        ctx.restore();
+      }
+    };
+    const lpThorPorcSplitThrow = throwSpear;
+    throwSpear = (f) => {
+      var _a2, _b2;
+      const special = (f == null ? void 0 : f.skin) === "spider" || (f == null ? void 0 : f.skin) === "flubber", unsupported = special, before = spears.length, split = special && f.splitArmed && f.hasSplitAbility && ((_a2 = f.splitCharge) != null ? _a2 : 1) >= 0.999, freeze = (f == null ? void 0 : f.skin) === "flubber" && f.freezeArmed && f.hasFreezeAbility && ((_b2 = f.freezeCharge) != null ? _b2 : 1) >= 0.999;
+      if (freeze) f.freezeArmed = false;
+      lpThorPorcSplitThrow(f);
+      const made = spears.slice(before).filter((s) => s.owner === f && (s.weapon === "flubberArm" || s.weapon === "spiderArm" || s.weapon === "freeze" && s.baseWeapon));
+      if (freeze && made.length && f.skin === "flubber") {
+        const s = made[0];
+        s.weapon = "freeze";
+        s.baseWeapon = "flubberArm";
+        s.freeze = true;
+        f.freezeCharge = 0;
+      }
+      if (split && made.length) {
+        const source = made[0];
+        source.splitShot = true;
+        const base = Math.atan2(source.vy, source.vx), speed = Math.hypot(source.vx, source.vy) || 760;
+        for (let i = 1; i < 3; i++) {
+          const q = base + (i === 1 ? -0.2 : 0.2), copy = __spreadProps(__spreadValues({}, source), { x: source.x, y: source.y, vx: Math.cos(q) * speed, vy: Math.sin(q) * speed, a: q, spinA: q, stuck: false, stuckTo: null, life: source.life, armWall: false, returnTimer: 0, splitShot: true });
+          spears.push(copy);
+        }
+        f.splitArmed = false;
+        f.splitCharge = 0;
+      }
+      if (unsupported) {
+        for (const s of spears.slice(before)) if (s.owner === f) s.ricochet = false;
+      }
+    };
+    const lpThorPorcRicoButton = updateRicochetButton;
+    updateRicochetButton = () => {
+      const me = localFighter();
+      if ((me == null ? void 0 : me.skin) === "spider" || (me == null ? void 0 : me.skin) === "flubber") {
+        if (ricochetBtn) {
+          ricochetBtn.hidden = true;
+          ricochetBtn.disabled = true;
+        }
+        return;
+      }
+      lpThorPorcRicoButton();
+    };
+    const lpThorPorcSmoothGuest = smoothGuest;
+    smoothGuest = (dt) => {
+      lpThorPorcSmoothGuest(dt);
+      if (netTarget == null ? void 0 : netTarget.fighters) {
+        const fs = allFighters();
+        netTarget.fighters.forEach((t, i) => {
+          const f = fs[i];
+          if (f) {
+            for (const k of ["thorCharges", "thorReload", "thorZap", "porcupineSpikesLoaded", "porcupineReload", "porcupineCurl"]) if (k in t) f[k] = t[k];
+          }
+        });
+      }
+    };
+    const lpPorcTouchSpecial = updateSpecial;
+    updateSpecial = (f, dt) => {
+      var _a2;
+      lpPorcTouchSpecial(f, dt);
+      if (f.skin === "porcupine" && !f.dead && (f.porcupineSpikesLoaded || f.porcupineCurl > 0)) {
+        const t = ((_a2 = allFighters().filter((o) => o !== f && !o.dead && !o.away).map((o) => ({ o, d: Math.hypot(o.x - f.x, o.y - f.y) })).filter((v) => v.d < 54).sort((a, b) => a.d - b.d)[0]) == null ? void 0 : _a2.o) || null;
+        if (t !== f.porcupineContact) {
+          f.porcupineContact = t;
+          if (t) {
+            const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1;
+            directDamage(f, t, dx / d, dy / d, 420, Math.sign(dx || 1) * 8, "#e8d995");
+          }
+        }
+      }
     };
     renderIncomingFriendRequests();
     document.querySelectorAll("input,textarea,select").forEach((field) => {
