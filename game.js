@@ -9849,6 +9849,201 @@
       s.x = oldX;
       s.y = oldY;
     };
+    const lpFinalRespondIncoming = (request, accepted) => {
+      const code = cleanFriendCode(request == null ? void 0 : request.code), name = cleanPlayerName((request == null ? void 0 : request.name) || code);
+      if (!code) return;
+      removeIncomingFriend(code);
+      if (accepted) {
+        rememberFriend(code, name);
+        pendingStatus == null ? void 0 : pendingStatus("FRIEND ADDED.");
+      } else pendingStatus == null ? void 0 : pendingStatus("FRIEND REQUEST DENIED.");
+      let sent = false, attempts = 0;
+      const sendReply = () => {
+        if (sent) return;
+        if (!(presencePeer == null ? void 0 : presencePeer.open)) {
+          if (attempts++ < 8) {
+            try {
+              initPresence();
+            } catch (_) {
+            }
+            setTimeout(sendReply, 700);
+          }
+          return;
+        }
+        try {
+          const link = presencePeer.connect("lp-user-" + code.toLowerCase(), { reliable: true, serialization: "json", metadata: { type: "friend-response", from: friendCode } });
+          link.on("open", () => {
+            sent = true;
+            link.send({ type: accepted ? "friend-accept" : "friend-deny", code: friendCode, name: playerName });
+            setTimeout(() => {
+              try {
+                link.close();
+              } catch (_) {
+              }
+            }, 350);
+          });
+          link.on("error", () => {
+            if (attempts++ < 8) setTimeout(sendReply, 700);
+          });
+        } catch (_) {
+          if (attempts++ < 8) setTimeout(sendReply, 700);
+        }
+      };
+      sendReply();
+    };
+    respondToIncomingFriend = lpFinalRespondIncoming;
+    const lpFinalAddFriend = () => {
+      const input = document.querySelector("#friendCodeInput"), raw = String((input == null ? void 0 : input.value) || "").trim(), code = cleanFriendCode(raw);
+      if (code.length < 3) {
+        pendingStatus == null ? void 0 : pendingStatus("ENTER YOUR FRIEND\u2019S NAME.");
+        return;
+      }
+      if (code === friendCode) {
+        pendingStatus == null ? void 0 : pendingStatus("THAT IS YOUR OWN NAME.");
+        return;
+      }
+      if (friendProfiles.some((friend) => friend.code === code)) {
+        pendingStatus == null ? void 0 : pendingStatus("YOU ARE ALREADY FRIENDS.");
+        return;
+      }
+      if (pendingFriendRequests.some((request) => request.code === code)) {
+        pendingStatus == null ? void 0 : pendingStatus("FRIEND REQUEST IS ALREADY WAITING.");
+        return;
+      }
+      pendingFriendRequests.push({ code, name: cleanPlayerName(raw), expiresAt: Date.now() + PENDING_FRIEND_LIFE, lastTry: 0, trying: false });
+      savePendingFriends();
+      if (input) input.value = "";
+      renderFriends();
+      pendingStatus == null ? void 0 : pendingStatus("FRIEND REQUEST SENT \u2014 WAITING FOR ACCEPTANCE.");
+      retryPendingFriendRequests();
+    };
+    const lpFinalAddButton = document.querySelector("#addFriendButton"), lpFinalAddField = document.querySelector("#friendCodeInput");
+    if (lpFinalAddButton) lpFinalAddButton.onclick = lpFinalAddFriend;
+    if (lpFinalAddField) lpFinalAddField.onkeydown = (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        lpFinalAddFriend();
+      }
+    };
+    const lpSpiderV2ApplySkin = applySkin;
+    applySkin = (f, id) => {
+      lpSpiderV2ApplySkin(f, id);
+      if (f.skin === "spider") {
+        f.maxThrows = 1;
+        f.throwsLeft = 1;
+        f.hasSpear = true;
+        f.spiderArmIndex = Number.isFinite(f.spiderArmIndex) ? f.spiderArmIndex % 6 : 0;
+        f.spiderVersion = 2;
+      }
+    };
+    const lpSpiderV2Throw = throwSpear;
+    throwSpear = (f) => {
+      const before = spears.length;
+      lpSpiderV2Throw(f);
+      if ((f == null ? void 0 : f.skin) === "spider") {
+        const made = spears.slice(before).filter((s) => s.owner === f && (s.weapon === "spiderArm" || s.weapon === "freeze" && s.baseWeapon === "spiderArm"));
+        made.forEach((s, i) => {
+          s.spiderVersion = 2;
+          s.stickyTip = true;
+          s.armIndex = Number.isFinite(s.armIndex) ? s.armIndex : (f.spiderArmIndex - 1 + i + 6) % 6;
+          s.life = Math.max(s.life, 2.8);
+          s.returnTimer = 0;
+        });
+      }
+    };
+    const lpSpiderV2Update = update;
+    update = (dt) => {
+      var _a2;
+      lpSpiderV2Update(dt);
+      for (const s of spears) {
+        if (((_a2 = s.owner) == null ? void 0 : _a2.skin) !== "spider" || s.spiderVersion !== 2) continue;
+        if (!s.stuckTo && !s.stuck && !s.armWall) continue;
+        if (s.stuckTo) {
+          s.returnTimer = (s.returnTimer || 0) + dt;
+          if (s.returnTimer >= 0.72) {
+            s.stuckTo = null;
+            s.stuck = false;
+            s.armWall = false;
+            s.returning = true;
+            s.life = 2.4;
+          }
+        } else if (s.armWall) {
+          s.returnTimer = (s.returnTimer || 0) + dt;
+          if (s.returnTimer >= 3) {
+            s.armWall = false;
+            s.returning = true;
+            s.life = 2.4;
+          }
+        }
+        if (s.returning) {
+          const owner = s.owner, dx = owner.x - s.x, dy = owner.y - 20 - s.y, d = Math.hypot(dx, dy) || 1;
+          s.vx = dx / d * 900;
+          s.vy = dy / d * 900;
+          s.a = Math.atan2(s.vy, s.vx);
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          if (d < 30) {
+            s.life = 0;
+            s.returning = false;
+            s.stuck = false;
+            s.stuckTo = null;
+            s.armWall = false;
+          }
+        }
+      }
+    };
+    const lpSpiderV2DrawSpear = drawSpear;
+    drawSpear = (s) => {
+      var _a2;
+      const isSpider = ((_a2 = s.owner) == null ? void 0 : _a2.skin) === "spider" && (s.weapon === "spiderArm" || s.weapon === "freeze" && s.baseWeapon === "spiderArm");
+      if (!isSpider) return lpSpiderV2DrawSpear(s);
+      const owner = s.owner, ox = owner.x, oy = owner.y - 20, blue = s.weapon === "freeze", ax = s.x - ox, ay = s.y - oy, dist = Math.hypot(ax, ay) || 1;
+      ctx.save();
+      ctx.strokeStyle = blue ? "#5be9ff" : owner.color || "#d9e8ef";
+      ctx.shadowColor = blue ? "#37cfff" : owner.color || "#d9e8ef";
+      ctx.shadowBlur = blue ? 14 : 8;
+      ctx.lineWidth = blue ? 6 : 7;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(s.x, s.y);
+      ctx.stroke();
+      ctx.fillStyle = blue ? "#8af0ff" : owner.color || "#d9e8ef";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    };
+    const lpSpiderV2DrawFighter = drawFighter;
+    drawFighter = (f) => {
+      if (f.skin !== "spider") return lpSpiderV2DrawFighter(f);
+      const rot = f.angle - (f.side === "player" ? 0 : Math.PI), c = f.color || "#d9e8ef";
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(rot);
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+      ctx.fillStyle = "#17232a";
+      ctx.beginPath();
+      ctx.arc(0, -34, 17, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = c;
+      ctx.stroke();
+      for (let i = 0; i < 6; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 3, sx = Math.cos(a) * 8, sy = -22 + Math.sin(a) * 8;
+        const active = spears.find((q) => q.owner === f && q.spiderVersion === 2 && q.armIndex === i && !q.returning);
+        ctx.strokeStyle = active ? active.weapon === "freeze" ? "#5be9ff" : c : c;
+        ctx.lineWidth = active ? 7 : 6;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        if (active) ctx.lineTo(active.x - f.x, active.y - f.y);
+        else ctx.lineTo(Math.cos(a) * 42, Math.sin(a) * 42 - 22);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
     renderIncomingFriendRequests();
     document.querySelectorAll("input,textarea,select").forEach((field) => {
       field.addEventListener("pointerdown", (event) => {
