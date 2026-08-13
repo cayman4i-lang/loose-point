@@ -9615,6 +9615,143 @@
         }
       }
     };
+    const lpCaptainFreezeThrowFinal = throwSpear;
+    throwSpear = (f) => {
+      const before = spears.length;
+      lpCaptainFreezeThrowFinal(f);
+      if ((f == null ? void 0 : f.skin) === "captain") {
+        for (const s of spears.slice(before).filter((s2) => s2.owner === f)) {
+          if (s.weapon === "freeze" || s.weapon === "shield") {
+            s.baseWeapon = "shield";
+            s.freeze = true;
+            s.owner = f;
+          }
+        }
+      }
+    };
+    const lpCaptainFreezeUpdateFinal = update;
+    update = (dt) => {
+      lpCaptainFreezeUpdateFinal(dt);
+      for (const s of spears) {
+        if (!s.owner || s.owner.skin !== "captain" || s.baseWeapon !== "shield") continue;
+        const owner = s.owner;
+        if (!owner || owner.dead) {
+          s.life = 0;
+          continue;
+        }
+        const shieldShot = true;
+        if (s.stuckTo) {
+          s.stuckTo = null;
+          s.freezeTarget = false;
+          s.stuck = false;
+          s.returning = true;
+          s.life = Math.max(s.life, 20);
+        }
+        if (s.life <= 0) {
+          s.returning = true;
+          s.life = 20;
+        }
+        if (s.stuck && !s.returning) {
+          s.stuck = false;
+          s.returning = true;
+          s.life = Math.max(s.life, 20);
+        }
+        if (s.returning) {
+          s.weapon = "shield";
+          const dx = owner.x - s.x, dy = owner.y - 12 - s.y, d = Math.hypot(dx, dy) || 1;
+          s.vx = dx / d * 930;
+          s.vy = dy / d * 930;
+          s.a = Math.atan2(s.vy, s.vx);
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          if (Math.hypot(owner.x - s.x, owner.y - 12 - s.y) < 42) {
+            s.life = 0;
+            s.returning = false;
+            s.stuck = false;
+            s.stuckTo = null;
+            owner.shieldOut = false;
+            owner.hasSpear = true;
+            owner.throwsLeft = 1;
+            owner.cooldown = 0.62;
+            if (owner === player) {
+              throwBtn.classList.remove("cooldown");
+              const label = document.querySelector("#ammoLabel");
+              if (label) label.textContent = "SHOT READY";
+            }
+          }
+        }
+      }
+    };
+    const lpFinalFreezeShapeDraw = drawSpear;
+    drawSpear = (s) => {
+      var _a2, _b2;
+      if (s.weapon !== "freeze") return lpFinalFreezeShapeDraw(s);
+      const bw = s.baseWeapon || (((_a2 = s.owner) == null ? void 0 : _a2.skin) === "captain" ? "shield" : ((_b2 = s.owner) == null ? void 0 : _b2.skin) === "army" ? s.owner.armyClipType || "bullet" : "spear");
+      const prior = s.weapon;
+      if (s.baseWeapon) {
+        s.weapon = s.baseWeapon;
+        lpFinalFreezeShapeDraw(s);
+        s.weapon = prior;
+      }
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.a || 0);
+      ctx.strokeStyle = "#5be9ff";
+      ctx.shadowColor = "#2caeff";
+      ctx.shadowBlur = 13;
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      if (bw === "shield") {
+        ctx.moveTo(0, -28);
+        ctx.quadraticCurveTo(24, -25, 28, -4);
+        ctx.lineTo(23, 22);
+        ctx.quadraticCurveTo(0, 32, -23, 22);
+        ctx.lineTo(-28, -4);
+        ctx.quadraticCurveTo(-24, -25, 0, -28);
+        ctx.closePath();
+      } else if (bw === "bullet") {
+        ctx.rect(-15, -6, 30, 12);
+      } else if (bw === "knife") {
+        ctx.moveTo(-18, -6);
+        ctx.lineTo(20, 0);
+        ctx.lineTo(-18, 6);
+        ctx.closePath();
+      } else if (bw === "mine") {
+        ctx.moveTo(-14, -9);
+        ctx.quadraticCurveTo(-14, -14, -9, -14);
+        ctx.lineTo(9, -14);
+        ctx.quadraticCurveTo(14, -14, 14, -9);
+        ctx.lineTo(14, 9);
+        ctx.quadraticCurveTo(14, 14, 9, 14);
+        ctx.lineTo(-9, 14);
+        ctx.quadraticCurveTo(-14, 14, -14, 9);
+        ctx.closePath();
+      } else if (bw === "star") {
+        for (let i = 0; i < 8; i++) {
+          const aa = i * Math.PI / 4, r = i % 2 ? 7 : 19, xx = Math.cos(aa) * r, yy = Math.sin(aa) * r;
+          i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy);
+        }
+        ctx.closePath();
+      } else if (bw === "web" || bw === "spiderWeb" || bw === "flubberArm" || bw === "spiderArm") {
+        ctx.moveTo(-28, -5);
+        for (let xx = -28; xx <= 26; xx += 6) ctx.lineTo(xx, Math.sin(xx * 0.45) * 6);
+        ctx.lineTo(30, 0);
+        ctx.lineTo(26, 6);
+        ctx.lineTo(-28, 5);
+        ctx.closePath();
+      } else {
+        ctx.moveTo(-36, -5);
+        ctx.lineTo(25, -5);
+        ctx.lineTo(35, 0);
+        ctx.lineTo(25, 5);
+        ctx.lineTo(-36, 5);
+        ctx.closePath();
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
     renderIncomingFriendRequests();
     document.querySelectorAll("input,textarea,select").forEach((field) => {
       field.addEventListener("pointerdown", (event) => {
