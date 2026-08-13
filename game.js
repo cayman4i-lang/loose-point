@@ -10044,6 +10044,68 @@
       }
       ctx.restore();
     };
+    function lpDiscoverPeerRooms() {
+      return __async(this, null, function* () {
+        const urls = ["https://0.peerjs.com/peerjs/peers?key=peerjs", "https://0.peerjs.com/peers?key=peerjs"];
+        for (const url of urls) {
+          try {
+            const response = yield fetch(url, { cache: "no-store" });
+            if (!response.ok) continue;
+            const data = yield response.json().catch(() => []);
+            const ids = Array.isArray(data) ? data : Array.isArray(data == null ? void 0 : data.peers) ? data.peers : [];
+            const rooms = ids.map((id) => String(id).trim().toLowerCase()).filter((id) => /^loose-[a-z0-9]{4,}$/.test(id) && id !== String(hostedRoomId || "").toLowerCase());
+            if (rooms.length) return rooms.map((roomId) => ({ roomId }));
+          } catch (_) {
+          }
+        }
+        return [];
+      });
+    }
+    const lpPreviousRoomList = lpGetPublicRooms;
+    lpGetPublicRooms = () => __async(null, null, function* () {
+      const listed = yield lpPreviousRoomList();
+      if (listed.length) return listed;
+      return lpDiscoverPeerRooms();
+    });
+    joinFirstAvailableRoom = () => __async(null, null, function* () {
+      if (netMode !== "local" || joinBusy || peer || conn) {
+        const status2 = document.querySelector("#lobbyStatus");
+        if (status2) status2.textContent = "ALREADY CONNECTING OR IN A ROOM.";
+        return;
+      }
+      const status = document.querySelector("#lobbyStatus");
+      if (status) status.textContent = "LOOKING FOR AN OPEN ROOM...";
+      const publicRooms = yield lpGetPublicRooms();
+      const friendRooms = friendProfiles.map((friend) => friendStates.get(friend.code)).filter((state) => (state == null ? void 0 : state.online) && state.roomId).map((state) => ({ roomId: state.roomId }));
+      const room = publicRooms[0] || friendRooms[0];
+      if (!room) {
+        showRoomNotice("NO ROOM AVAILABLE");
+        if (status) status.textContent = "NO ROOM FOUND \u2014 TYPE THE HOST CODE OR ADD THEM AS A FRIEND.";
+        return;
+      }
+      const roomId = String(room.roomId).trim().toLowerCase();
+      document.querySelector("#roomInput").value = roomId;
+      joinRoom();
+    });
+    const lpRoomJoinButton = document.querySelector("#joinFirstRoomButton");
+    if (lpRoomJoinButton) {
+      lpRoomJoinButton.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        joinFirstAvailableRoom();
+      };
+      lpRoomJoinButton.disabled = false;
+    }
+    const lpOriginalRefreshFriends = refreshFriends;
+    refreshFriends = () => {
+      lpOriginalRefreshFriends();
+      if (presencePeer && !presencePeer.open && !presencePeer.destroyed) {
+        try {
+          presencePeer.reconnect();
+        } catch (_) {
+        }
+      }
+    };
     renderIncomingFriendRequests();
     document.querySelectorAll("input,textarea,select").forEach((field) => {
       field.addEventListener("pointerdown", (event) => {
