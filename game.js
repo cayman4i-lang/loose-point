@@ -9752,6 +9752,103 @@
       ctx.stroke();
       ctx.restore();
     };
+    function lpRoomDirectoryRequest(action, roomId) {
+      return __async(this, null, function* () {
+        const body = roomId ? { roomId, action } : {};
+        for (const endpoint of ["/api/rooms", "api/rooms"]) {
+          try {
+            const response = yield fetch(endpoint, { method: action === "list" ? "GET" : "POST", cache: "no-store", headers: { "content-type": "application/json" }, body: action === "list" ? void 0 : JSON.stringify(body) });
+            if (response.ok) {
+              const data = yield response.json().catch(() => ({}));
+              return data;
+            }
+          } catch (_) {
+          }
+        }
+        return null;
+      });
+    }
+    function lpGetPublicRooms() {
+      return __async(this, null, function* () {
+        const data = yield lpRoomDirectoryRequest("list");
+        return Array.isArray(data == null ? void 0 : data.rooms) ? data.rooms.filter((r) => r == null ? void 0 : r.roomId) : [];
+      });
+    }
+    publishRoom = (roomId, action = "host") => __async(null, null, function* () {
+      if (!roomId) return;
+      yield lpRoomDirectoryRequest(action, roomId);
+    });
+    keepRoomListed = () => {
+      clearTimeout(roomDirectoryTimer);
+      if (netMode !== "host" || !hostedRoomId) return;
+      publishRoom(hostedRoomId, "host");
+      roomDirectoryTimer = setTimeout(keepRoomListed, 15e3);
+    };
+    loadNearbyRooms = () => __async(null, null, function* () {
+      const box = document.querySelector("#nearbyRooms");
+      if (!box) return;
+      box.innerHTML = "<small>CHECKING OPEN ROOMS...</small>";
+      const rooms = yield lpGetPublicRooms();
+      if (!rooms.length) {
+        box.innerHTML = "<small>NO OPEN ROOMS FOUND \u2014 YOU CAN TYPE A CODE.</small>";
+        return;
+      }
+      box.innerHTML = "<b>OPEN ROOMS</b>";
+      for (const room of rooms) {
+        const button = document.createElement("button"), roomId = String(room.roomId).trim().toLowerCase();
+        button.innerHTML = "<span>" + roomId.toUpperCase() + "</span><small>TAP TO JOIN</small>";
+        button.onclick = () => {
+          document.querySelector("#roomInput").value = roomId;
+          joinRoom();
+        };
+        box.appendChild(button);
+      }
+    });
+    joinFirstAvailableRoom = () => __async(null, null, function* () {
+      if (netMode !== "local" || joinBusy || peer || conn) return;
+      const status = document.querySelector("#lobbyStatus");
+      if (status) status.textContent = "LOOKING FOR AN OPEN ROOM...";
+      const publicRooms = yield lpGetPublicRooms();
+      const friendRooms = friendProfiles.map((friend) => friendStates.get(friend.code)).filter((state) => (state == null ? void 0 : state.online) && state.roomId).map((state) => ({ roomId: state.roomId }));
+      const room = publicRooms[0] || friendRooms[0];
+      if (!room) {
+        showRoomNotice("NO ROOM AVAILABLE");
+        if (status) status.textContent = "NO ROOM AVAILABLE.";
+        return;
+      }
+      const roomId = String(room.roomId).trim().toLowerCase();
+      document.querySelector("#roomInput").value = roomId;
+      joinRoom();
+    });
+    const lpThorBoundUpdate = update;
+    update = (dt) => {
+      lpThorBoundUpdate(dt);
+      for (const s of spears) {
+        if (s.weapon !== "thorLightning" || !s.owner || s.owner.dead) continue;
+        const m = macePosition(s.owner), maxReach = s.maxLength || Math.min(W, H) * 0.72;
+        s.maxLength = maxReach;
+        const dx = s.x - m.x, dy = s.y - m.y, d = Math.hypot(dx, dy) || 1;
+        if (d > maxReach) {
+          s.x = m.x + dx / d * maxReach;
+          s.y = m.y + dy / d * maxReach;
+          s.vx = 0;
+          s.vy = 0;
+        }
+      }
+    };
+    const lpThorBoundDraw = drawSpear;
+    drawSpear = (s) => {
+      if (s.weapon !== "thorLightning") return lpThorBoundDraw(s);
+      const owner = s.owner, m = owner ? macePosition(owner) : { x: s.x, y: s.y }, maxReach = s.maxLength || Math.min(W, H) * 0.72;
+      const dx = s.x - m.x, dy = s.y - m.y, d = Math.hypot(dx, dy) || 1;
+      if (d <= maxReach) return lpThorBoundDraw(s);
+      const oldX = s.x, oldY = s.y;
+      s.x = m.x + dx / d * maxReach;
+      s.y = m.y + dy / d * maxReach;
+      lpThorBoundDraw(s);
+      s.x = oldX;
+      s.y = oldY;
+    };
     renderIncomingFriendRequests();
     document.querySelectorAll("input,textarea,select").forEach((field) => {
       field.addEventListener("pointerdown", (event) => {
