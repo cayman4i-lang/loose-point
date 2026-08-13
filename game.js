@@ -8066,13 +8066,14 @@
       const b = document.querySelector("#buyLifeButton");
       if (b) {
         const cost = LIFE_COSTS[lifeLevel];
-        b.textContent = lifeLevel >= LIFE_MAX_LEVEL ? "MAXIMUM \u2014 10 LIVES" : "ADD ONE LIFE \u2014 \u25C9 " + cost;
-        b.disabled = lifeLevel >= LIFE_MAX_LEVEL || playerCoins < cost;
+        const mustBeatSpider = playerLives() === 8 && !ownedSkins.has("spider");
+        b.textContent = mustBeatSpider ? "DEFEAT SPIDER AT 8 LIVES" : lifeLevel >= LIFE_MAX_LEVEL ? "MAXIMUM \u2014 10 LIVES" : "ADD ONE LIFE \u2014 \u25C9 " + cost;
+        b.disabled = lifeLevel >= LIFE_MAX_LEVEL || playerCoins < cost || mustBeatSpider;
       }
     };
     document.querySelector("#buyLifeButton").onclick = () => {
       const cost = LIFE_COSTS[lifeLevel];
-      if (lifeLevel >= LIFE_MAX_LEVEL || playerCoins < cost) return;
+      if (lifeLevel >= LIFE_MAX_LEVEL || playerCoins < cost || playerLives() === 8 && !ownedSkins.has("spider")) return;
       playerCoins -= cost;
       lifeLevel++;
       saveUpgrades();
@@ -8594,7 +8595,7 @@
       characterResetRound();
       if (netMode === "local") {
         const lives = playerLives();
-        if (lives === 8) {
+        if (lives === 8 && !ownedSkins.has("spider")) {
           applySkin(bot, "spider");
           bot.color = colors.red;
           bot.maxHp = bot.hp = 11;
